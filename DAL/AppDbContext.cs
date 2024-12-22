@@ -28,7 +28,7 @@ namespace gestion_budget.DAL
                 .HasOne(c => c.ParentCategory)
                 .WithMany(c => c.SubCategories)
                 .HasForeignKey(c => c.ParentCategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Transaction>()
                 .HasOne(t => t.User)
@@ -40,7 +40,7 @@ namespace gestion_budget.DAL
                 .HasOne(t => t.Category)
                 .WithMany(c => c.Transactions)
                 .HasForeignKey(t => t.CategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Budget>()
                 .HasOne(b => b.User)
@@ -52,7 +52,7 @@ namespace gestion_budget.DAL
                 .HasOne(b => b.Category)
                 .WithMany(c => c.Budgets)
                 .HasForeignKey(b => b.CategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Alert>()
                 .HasOne(a => a.User)
