@@ -1,0 +1,7 @@
+# Ignore Visual Studio temporary files, directories, and files
+.vs/
+*.vspscc
+*.vssscc
+.vscode/
+bin/
+obj/
