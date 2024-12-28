@@ -25,31 +25,53 @@ namespace gestion_budget.Pages.Back_Office.Categories
         {
             int pageSize = 1;
 
-            // Récupérer les catégories parentales avec le comptage total
             var query = _context.Categories
                 .Include(c => c.SubCategories)
                 .Where(c => c.ParentCategoryId == null);
 
             int totalCategories = await query.CountAsync();
 
-            // Appliquer la pagination directement dans la requête SQL
             var parentCategories = await query
-                .OrderBy(c => c.Name) // Trier les catégories parentales par nom
+                .OrderBy(c => c.Name)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
-            // Préparer les catégories parentales et leurs sous-catégories pour l'affichage
             DisplayedCategories = parentCategories
                 .SelectMany(parent => new[] { parent }
                     .Concat(parent.SubCategories ?? Enumerable.Empty<Category>()))
                 .ToList();
 
-            // Calculer le nombre total de pages
             CurrentPage = pageNumber;
             TotalPages = (int)Math.Ceiling((double)totalCategories / pageSize);
 
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostDeleteAsync(int id)
+        {
+            var categoryToDelete = await _context.Categories
+                .Include(c => c.SubCategories)
+                .FirstOrDefaultAsync(c => c.CategoryId == id);
+
+            if (categoryToDelete == null)
+            {
+                return NotFound("La catégorie demandée n'existe pas.");
+            }
+
+            try
+            {
+                _context.Categories.Remove(categoryToDelete);
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "La catégorie a été supprimée avec succès.";
+                return RedirectToPage("/Back-Office/Categories/lists", new { pageNumber = CurrentPage });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, "Erreur lors de la suppression de la catégorie : " + ex.Message);
+                return Page();
+            }
         }
     }
 }

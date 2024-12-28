@@ -1,0 +1,51 @@
+﻿@page
+@model gestion_budget.Pages.Back_Office.Categories.AddModel
+@{
+    ViewData["Title"] = "Ajouter une Catégorie";
+}
+
+<h2>Ajouter une Catégorie</h2>
+
+<div class="validation-summary-errors">
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <ul>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    }
+</div>
+
+<form method="post">
+    <div class="form-group">
+        <label asp-for="Category.Name">Nom</label>
+        <input type="text" asp-for="Category.Name" class="form-control" required />
+        <span asp-validation-for="Category.Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Category.IsIncome">Type</label>
+        <select asp-for="Category.IsIncome" class="form-control" required>
+            <option value="true">Revenu</option>
+            <option value="false">Dépense</option>
+        </select>
+        <span asp-validation-for="Category.IsIncome" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Category.ParentCategoryId">Catégorie Parente</label>
+        <select asp-for="Category.ParentCategoryId" class="form-control">
+            <option value="">Aucune</option>
+            @foreach (var parentCategory in Model.ParentCategories)
+            {
+                <option value="@parentCategory.CategoryId">@parentCategory.Name</option>
+            }
+        </select>
+        <span asp-validation-for="Category.ParentCategoryId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Ajouter</button>
+    <a asp-page="/Back-Office/Categories/lists" class="btn btn-secondary">Annuler</a>
+</form>

@@ -1,12 +1,11 @@
-﻿@page "/categories"
+﻿@page
 @model gestion_budget.Pages.Back_Office.Categories.CategoriesModel
 @{
     ViewData["Title"] = "Gestion des Catégories";
 }
 
-<h1>Gestion des Catégories Financières</h1>
-
 <h2>Liste des Catégories</h2>
+
 @if (Model.DisplayedCategories.Any())
 {
     <table>
@@ -15,6 +14,7 @@
                 <th>Nom</th>
                 <th>Type</th>
                 <th>Parent</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -26,6 +26,12 @@
                     </td>
                     <td>@(category.IsIncome ? "Revenu" : "Dépense")</td>
                     <td>@category.ParentCategory?.Name</td>
+                    <td>
+                        <a class="btn btn-primary" asp-page="/Back-Office/Categories/edit" asp-route-id="@category.CategoryId">Modifier</a>
+                        <form method="post" asp-page-handler="Delete" asp-route-id="@category.CategoryId" style="display:inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?');">
+                            <button type="submit" class="btn btn-danger">Supprimer</button>
+                        </form>
+                    </td>
                 </tr>
             }
         </tbody>
@@ -60,3 +66,14 @@ else
         }
     </ul>
 </div>
+
+<button>
+    <a class="nav-link text-dark" asp-area="" asp-page="/Back-Office/Categories/add">Ajouter une catégorie</a>
+</button>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
