@@ -23,7 +23,7 @@ namespace gestion_budget.Pages.Back_Office.Categories
 
         public async Task<IActionResult> OnGetAsync(int pageNumber = 1)
         {
-            int pageSize = 1;
+            int pageSize = 2;
 
             var query = _context.Categories
                 .Include(c => c.SubCategories)
