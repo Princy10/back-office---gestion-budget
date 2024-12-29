@@ -1,0 +1,27 @@
+﻿@page
+@model gestion_budget.Pages.Back_Office.Account.RegisterModel
+@{
+    Layout = null;
+    <h2>Inscription</h2>
+
+    <form method="post">
+        <div>
+            <label>Nom d'utilisateur</label>
+            <input type="text" name="UserName" required />
+        </div>
+        <div>
+            <label>Email</label>
+            <input type="email" name="Email" required />
+        </div>
+        <div>
+            <label>Mot de passe</label>
+            <input type="password" name="Password" required />
+        </div>
+        <button type="submit">S'inscrire</button>
+    </form>
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <p style="color:red">@Model.ErrorMessage</p>
+    }
+}

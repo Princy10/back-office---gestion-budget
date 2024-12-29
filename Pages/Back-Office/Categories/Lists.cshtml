@@ -30,7 +30,7 @@
                 <!-- Ajustement du décalage en fonction de la hiérarchie -->
                 <tr>
                     <td style="padding-left:@((category.ParentCategoryId != null) ? "40px" : "0px");">
-                        @category.Name
+                        &nbsp @category.Name
                     </td>
                     <td>@(category.IsIncome ? "Revenu" : "Dépense")</td>
                     <td>
