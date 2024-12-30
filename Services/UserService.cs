@@ -75,5 +75,14 @@ namespace gestion_budget.Services
             var hash = sha256.ComputeHash(bytes);
             return Convert.ToBase64String(hash);
         }
+        public string GetUserName()
+        {
+            return _httpContextAccessor.HttpContext.Session.GetString("UserName");
+        }
+
+        public int? GetRoleId()
+        {
+            return _httpContextAccessor.HttpContext.Session.GetInt32("RoleId");
+        }
     }
 }

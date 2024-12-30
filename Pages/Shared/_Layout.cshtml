@@ -1,4 +1,12 @@
-﻿<!DOCTYPE html>
+﻿@using gestion_budget.Services
+@inject UserService UserService
+
+@{
+    var userName = UserService.GetUserName();
+    var roleId = UserService.GetRoleId();
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -25,10 +33,15 @@
                             <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Back-Office/Categories/lists">Categories</a>
+                            @if (roleId==1) {
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Back-Office/Categories/lists">Categories</a>
+                            }
                         </li>
                     </ul>
-                    <p class="nav navbar-text">Hello, @User.Identity?.Name!</p>
+                    <p class="nav navbar-text">Hello, @userName</p>
+                    <form method="get" asp-page="/Back-Office/Account/Logout" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">Déconnexion</button>
+                    </form>
                 </div>
             </div>
         </nav>
