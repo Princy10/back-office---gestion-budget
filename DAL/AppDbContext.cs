@@ -16,6 +16,7 @@ namespace gestion_budget.DAL
         public DbSet<Budget> Budgets { get; set; }
         public DbSet<Alert> Alerts { get; set; }
         public DbSet<ImportedTransaction> ImportedTransactions { get; set; }
+        public DbSet<DefaultSetting> DefaultSettings { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -65,6 +66,18 @@ namespace gestion_budget.DAL
                 .WithMany(b => b.Alerts)
                 .HasForeignKey(a => a.BudgetId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<DefaultSetting>()
+                .HasOne(ds => ds.User)
+                .WithMany()
+                .HasForeignKey(ds => ds.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DefaultSetting>()
+                .HasOne(ds => ds.Category)
+                .WithMany()
+                .HasForeignKey(ds => ds.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             base.OnModelCreating(modelBuilder);
         }

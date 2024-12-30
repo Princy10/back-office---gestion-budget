@@ -84,5 +84,10 @@ namespace gestion_budget.Services
         {
             return _httpContextAccessor.HttpContext.Session.GetInt32("RoleId");
         }
+
+        public async Task<List<User>> GetAllUsersAsync()
+        {
+            return await _dbContext.Users.ToListAsync();
+        }
     }
 }

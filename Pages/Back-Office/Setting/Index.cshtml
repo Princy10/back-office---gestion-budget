@@ -1,0 +1,34 @@
+﻿@page
+@model gestion_budget.Pages.Back_Office.Setting.IndexModel
+@{
+    ViewData["Title"] = "Paramètres par défaut";
+}
+
+<h1>Paramètres par défaut</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Utilisateur</th>
+            <th>Catégorie</th>
+            <th>Plafond</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var setting in Model.DefaultSettings)
+        {
+            <tr>
+                <td>@setting.User.UserName</td>
+                <td>@setting.Category.Name</td>
+                <td>@setting.DefaultLimit</td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@setting.DefaultSettingId" class="btn btn-primary">Modifier</a>
+                    <a asp-page="./Delete" asp-route-id="@setting.DefaultSettingId" class="btn btn-danger">Supprimer</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-page="./Create" class="btn btn-success">Ajouter un nouveau paramètre</a>

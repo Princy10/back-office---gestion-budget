@@ -15,6 +15,7 @@ builder.Services.AddDbContext<AppDbContext>(
 );
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<DefaultSettingService>();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);

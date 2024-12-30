@@ -32,13 +32,17 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
                         </li>
+                        
+                        @if (roleId==1) {
                         <li class="nav-item">
-                            @if (roleId==1) {
-                                <a class="nav-link text-dark" asp-area="" asp-page="/Back-Office/Categories/lists">Categories</a>
-                            }
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Back-Office/Categories/lists">Categories</a>
                         </li>
+                        <li>
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Back-Office/Setting/index">Plafonds</a>
+                        </li>
+                        }
                     </ul>
-                    <p class="nav navbar-text">Hello, @userName</p>
+                    <p class="nav navbar-text">Hello, @userName &nbsp;</p>
                     <form method="get" asp-page="/Back-Office/Account/Logout" style="display:inline;">
                         <button type="submit" class="btn btn-danger">Déconnexion</button>
                     </form>
