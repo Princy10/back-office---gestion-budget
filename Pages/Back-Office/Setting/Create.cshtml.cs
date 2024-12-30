@@ -10,13 +10,13 @@ namespace gestion_budget.Pages.Back_Office.Setting
     {
         private readonly DefaultSettingService _defaultSettingService;
         private readonly UserService _userService;
-        //private readonly CategoryService _categoryService;
+        private readonly CategoryService _categoryService;
 
-        public CreateModel(DefaultSettingService defaultSettingService, UserService userService, /*CategoryService categoryService*/)
+        public CreateModel(DefaultSettingService defaultSettingService, UserService userService, CategoryService categoryService)
         {
             _defaultSettingService = defaultSettingService;
             _userService = userService;
-            //_categoryService = categoryService;
+            _categoryService = categoryService;
         }
 
         [BindProperty]
@@ -28,10 +28,10 @@ namespace gestion_budget.Pages.Back_Office.Setting
         public async Task OnGetAsync()
         {
             var users = await _userService.GetAllUsersAsync();
-            //var categories = await _categoryService.GetAllCategoriesAsync();
+            var categories = await _categoryService.GetAllCategoriesAsync();
 
             Users = new SelectList(users, "UserId", "UserName");
-            //Categories = new SelectList(categories, "CategoryId", "Name");
+            Categories = new SelectList(categories, "CategoryId", "Name");
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -39,10 +39,10 @@ namespace gestion_budget.Pages.Back_Office.Setting
             if (!ModelState.IsValid)
             {
                 var users = await _userService.GetAllUsersAsync();
-                //var categories = await _categoryService.GetAllCategoriesAsync();
+                var categories = await _categoryService.GetAllCategoriesAsync();
 
                 Users = new SelectList(users, "UserId", "UserName");
-                //Categories = new SelectList(categories, "CategoryId", "Name");
+                Categories = new SelectList(categories, "CategoryId", "Name");
 
                 return Page();
             }

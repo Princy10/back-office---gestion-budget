@@ -1,76 +1,50 @@
 using gestion_budget.DAL;
 using gestion_budget.Models;
+using gestion_budget.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace gestion_budget.Pages.Back_Office.Categories
 {
-    public class CategoriesModel : PageModel
+    public class ListsModel : PageModel
     {
-        private readonly AppDbContext _context;
+        private readonly CategoryService _categoryService;
 
-        public CategoriesModel(AppDbContext context)
+        public ListsModel(CategoryService categoryService)
         {
-            _context = context;
+            _categoryService = categoryService;
         }
 
         public int CurrentPage { get; set; } = 1;
         public int TotalPages { get; set; } = 1;
-
         [BindProperty]
         public List<Category> DisplayedCategories { get; set; } = new List<Category>();
 
         public async Task<IActionResult> OnGetAsync(int pageNumber = 1)
         {
             int pageSize = 2;
-
-            var query = _context.Categories
-                .Include(c => c.SubCategories)
-                .Where(c => c.ParentCategoryId == null);
-
-            int totalCategories = await query.CountAsync();
-
-            var parentCategories = await query
-                .OrderBy(c => c.Name)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
+            (var parentCategories, int totalPages) = await _categoryService.GetPagedCategoriesAsync(pageNumber, pageSize);
             DisplayedCategories = parentCategories
-                .SelectMany(parent => new[] { parent }
-                    .Concat(parent.SubCategories ?? Enumerable.Empty<Category>()))
+                .SelectMany(parent => new[] { parent }.Concat(parent.SubCategories ?? Enumerable.Empty<Category>()))
                 .ToList();
-
             CurrentPage = pageNumber;
-            TotalPages = (int)Math.Ceiling((double)totalCategories / pageSize);
-
+            TotalPages = totalPages;
             return Page();
         }
 
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
-            var categoryToDelete = await _context.Categories
-                .Include(c => c.SubCategories)
-                .FirstOrDefaultAsync(c => c.CategoryId == id);
-
-            if (categoryToDelete == null)
-            {
-                return NotFound("La catégorie demandée n'existe pas.");
-            }
-
             try
             {
-                _context.Categories.Remove(categoryToDelete);
-                await _context.SaveChangesAsync();
-
+                await _categoryService.DeleteCategoryAsync(id);
                 TempData["SuccessMessage"] = "La catégorie a été supprimée avec succès.";
-                return RedirectToPage("/Back-Office/Categories/lists", new { pageNumber = CurrentPage });
+                return RedirectToPage(new { pageNumber = CurrentPage });
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, "Erreur lors de la suppression de la catégorie : " + ex.Message);
-                return Page();
+                ModelState.AddModelError(string.Empty, $"Erreur lors de la suppression : {ex.Message}");
+                return await OnGetAsync(CurrentPage);
             }
         }
     }

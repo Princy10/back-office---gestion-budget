@@ -1,5 +1,6 @@
 using gestion_budget.DAL;
 using gestion_budget.Models;
+using gestion_budget.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -8,32 +9,25 @@ namespace gestion_budget.Pages.Back_Office.Categories
 {
     public class EditModel : PageModel
     {
-        private readonly AppDbContext _context;
+        private readonly CategoryService _categoryService;
 
-        public EditModel(AppDbContext context)
+        public EditModel(CategoryService categoryService)
         {
-            _context = context;
+            _categoryService = categoryService;
         }
 
         [BindProperty]
         public Category Category { get; set; }
-
         public List<Category> ParentCategories { get; set; } = new List<Category>();
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            Category = await _context.Categories
-                .FirstOrDefaultAsync(c => c.CategoryId == id);
-
+            Category = await _categoryService.GetCategoryByIdAsync(id);
             if (Category == null)
             {
                 return NotFound();
             }
-
-            ParentCategories = await _context.Categories
-                .Where(c => c.ParentCategoryId == null)
-                .ToListAsync();
-
+            ParentCategories = await _categoryService.GetParentCategoriesAsync();
             return Page();
         }
 
@@ -41,31 +35,21 @@ namespace gestion_budget.Pages.Back_Office.Categories
         {
             if (!ModelState.IsValid)
             {
+                ParentCategories = await _categoryService.GetParentCategoriesAsync();
                 return Page();
             }
 
-            var categoryToUpdate = await _context.Categories
-                .FirstOrDefaultAsync(c => c.CategoryId == Category.CategoryId);
-
-            if (categoryToUpdate == null)
-            {
-                return NotFound();
-            }
-
-            categoryToUpdate.Name = Category.Name;
-            categoryToUpdate.IsIncome = Category.IsIncome;
-            categoryToUpdate.ParentCategoryId = Category.ParentCategoryId;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _categoryService.UpdateCategoryAsync(Category);
+                return RedirectToPage("/Back-Office/Categories/lists");
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                return BadRequest("Une erreur s'est produite lors de la mise à jour de la catégorie.");
+                ModelState.AddModelError(string.Empty, $"Erreur : {ex.Message}");
+                ParentCategories = await _categoryService.GetParentCategoriesAsync();
+                return Page();
             }
-
-            return RedirectToPage("/Back-Office/Categories/lists");
         }
     }
 }
