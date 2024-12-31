@@ -79,5 +79,12 @@ namespace gestion_budget.Services
                 .Include(c => c.SubCategories)
                 .ToListAsync();
         }
+
+        public async Task<List<Category>> GetIncomeCategorie()
+        {
+            return await _context.Categories
+                .Where(c => c.IsIncome == false)
+                .ToListAsync();
+        }
     }
 }

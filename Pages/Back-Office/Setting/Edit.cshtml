@@ -1,12 +1,13 @@
-﻿@page
-@model gestion_budget.Pages.Back_Office.Setting.CreateModel
+﻿@page "{id:int}"
+@model gestion_budget.Pages.Back_Office.Setting.EditModel
 @{
-    ViewData["Title"] = "Créer un nouveau paramètre";
+    ViewData["Title"] = "Modifier un paramètre";
 }
 
-<h1>Créer un nouveau paramètre</h1>
+<h1>Modifier un paramètre</h1>
 
 <form method="post">
+    <input type="hidden" asp-for="DefaultSetting.DefaultSettingId" />
     <div class="form-group">
         <label for="UserId">Utilisateur</label>
         <select asp-for="DefaultSetting.UserId" asp-items="Model.Users" class="form-control"></select>
@@ -23,4 +24,3 @@
     <button type="submit" class="btn btn-primary">Enregistrer</button>
     <a asp-page="./Index" class="btn btn-secondary">Annuler</a>
 </form>
-

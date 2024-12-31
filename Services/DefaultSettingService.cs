@@ -35,9 +35,18 @@ namespace gestion_budget.Services
         // Ajouter un nouveau paramètre par défaut
         public async Task AddDefaultSettingAsync(DefaultSetting defaultSetting)
         {
-            _context.DefaultSettings.Add(defaultSetting);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.DefaultSettings.Add(defaultSetting);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erreur lors de l'ajout du DefaultSetting : {ex.Message}");
+                throw;
+            }
         }
+
 
         // Récupérer un paramètre par son ID
         public async Task<DefaultSetting> GetDefaultSettingByIdAsync(int id)
@@ -51,14 +60,27 @@ namespace gestion_budget.Services
         // Mettre à jour un paramètre par défaut
         public async Task UpdateDefaultSettingAsync(DefaultSetting defaultSetting)
         {
-            var existing = await _context.DefaultSettings.FindAsync(defaultSetting.DefaultSettingId);
-            if (existing != null)
+            Console.WriteLine($"DefaultSettingId reçu : {defaultSetting.DefaultSettingId}");
+
+            var existing = await _context.DefaultSettings
+                .FirstOrDefaultAsync(ds => ds.DefaultSettingId == defaultSetting.DefaultSettingId);
+
+            if (existing == null)
             {
-                existing.DefaultLimit = defaultSetting.DefaultLimit;
-                existing.UpdatedAt = DateTime.Now;
-                await _context.SaveChangesAsync();
+                Console.WriteLine("Aucun DefaultSetting trouvé avec cet ID.");
+                return;
             }
+
+            Console.WriteLine($"DefaultSetting trouvé : {existing.DefaultSettingId}, UserId : {existing.UserId}, CategoryId : {existing.CategoryId}");
+
+            existing.UserId = defaultSetting.UserId;
+            existing.CategoryId = defaultSetting.CategoryId;
+            existing.DefaultLimit = defaultSetting.DefaultLimit;
+            existing.UpdatedAt = DateTime.Now;
+
+            await _context.SaveChangesAsync();
         }
+
 
         // Supprimer un paramètre par défaut
         public async Task DeleteDefaultSettingAsync(int id)

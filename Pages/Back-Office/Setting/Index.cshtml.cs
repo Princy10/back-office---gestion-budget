@@ -20,5 +20,21 @@ namespace gestion_budget.Pages.Back_Office.Setting
         {
             DefaultSettings = await _service.GetAllDefaultSettingsAsync();
         }
+
+        public async Task<IActionResult> OnPostDeleteAsync(int id)
+        {
+            try
+            {
+                await _service.DeleteDefaultSettingAsync(id);
+                TempData["SuccessMessage"] = "Le paramètre a été supprimé avec succès.";
+                return RedirectToPage("/Back-Office/Setting/index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Erreur lors de la suppression : {ex.Message}");
+                return RedirectToPage("/Back-Office/Setting/index");
+            }
+        }
+
     }
 }

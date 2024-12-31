@@ -89,5 +89,12 @@ namespace gestion_budget.Services
         {
             return await _dbContext.Users.ToListAsync();
         }
+
+        public async Task<List<User>> GetUserAdminAsync()
+        {
+            return await _dbContext.Users
+                .Where(u => u.RoleId == 2)
+                .ToListAsync();
+        }
     }
 }

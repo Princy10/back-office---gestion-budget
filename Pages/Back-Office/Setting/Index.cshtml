@@ -24,7 +24,9 @@
                 <td>@setting.DefaultLimit</td>
                 <td>
                     <a asp-page="./Edit" asp-route-id="@setting.DefaultSettingId" class="btn btn-primary">Modifier</a>
-                    <a asp-page="./Delete" asp-route-id="@setting.DefaultSettingId" class="btn btn-danger">Supprimer</a>
+                    <form method="post" asp-page-handler="Delete" asp-route-id="@setting.DefaultSettingId" style="display:inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette paramètre ?');">
+                        <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                    </form>
                 </td>
             </tr>
         }

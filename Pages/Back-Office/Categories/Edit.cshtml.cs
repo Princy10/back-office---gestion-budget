@@ -1,9 +1,7 @@
-using gestion_budget.DAL;
 using gestion_budget.Models;
 using gestion_budget.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 
 namespace gestion_budget.Pages.Back_Office.Categories
 {
