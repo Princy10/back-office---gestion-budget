@@ -1,0 +1,32 @@
+﻿@model IEnumerable<gestion_budget.Models.Transaction>
+
+<table>
+    <thead>
+        <tr>
+            <th>Catégorie</th>
+            <th>Montant</th>
+            <th>Date</th>
+            <th>Note</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var transaction in Model)
+        {
+            <tr>
+                <td>@transaction.Category.Name</td>
+                <td>@transaction.Amount</td>
+                <td>@transaction.TransactionDate.ToString("yyyy-MM-dd")</td>
+                <td>@transaction.Note</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@transaction.TransactionId">Modifier</a>
+                    <form asp-action="Delete" method="post" style="display:inline;">
+                        <input type="hidden" name="id" value="@transaction.TransactionId" />
+                        <button type="submit">Supprimer</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a asp-action="Add">Ajouter une transaction</a>

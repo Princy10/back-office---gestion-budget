@@ -1,0 +1,17 @@
+﻿@model gestion_budget.Models.Transaction
+
+<form asp-action="Add" method="post">
+    <label>Catégorie :</label>
+    <select asp-for="CategoryId" asp-items="@(new SelectList(ViewBag.Categories, "CategoryId", "Name"))"></select>
+
+    <label>Montant :</label>
+    <input type="number" asp-for="Amount" step="0.01" required />
+
+    <label>Date :</label>
+    <input type="date" asp-for="TransactionDate" required />
+
+    <label>Note :</label>
+    <textarea asp-for="Note"></textarea>
+
+    <button type="submit">Ajouter</button>
+</form>
