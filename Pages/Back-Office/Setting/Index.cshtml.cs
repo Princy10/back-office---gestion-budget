@@ -14,11 +14,17 @@ namespace gestion_budget.Pages.Back_Office.Setting
             _service = service;
         }
 
-        public List<DefaultSetting> DefaultSettings { get; set; }
+        public List<DefaultSetting> DisplayedDefaultSettings { get; set; }
+        public int CurrentPage { get; set; } = 1;
+        public int TotalPages { get; set; } = 1;
 
-        public async Task OnGetAsync()
+        public async Task OnGetAsync(int pageNumber = 1)
         {
-            DefaultSettings = await _service.GetAllDefaultSettingsAsync();
+            int pageSize = 10;
+            var result = await _service.GetPagedDefaultSettingsAsync(pageNumber, pageSize);
+            DisplayedDefaultSettings = result.DefaultSettings;
+            TotalPages = result.TotalPages;
+            CurrentPage = pageNumber;
         }
 
         public async Task<IActionResult> OnPostDeleteAsync(int id)
@@ -35,6 +41,5 @@ namespace gestion_budget.Pages.Back_Office.Setting
                 return RedirectToPage("/Back-Office/Setting/index");
             }
         }
-
     }
 }

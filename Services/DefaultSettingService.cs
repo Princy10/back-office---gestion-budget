@@ -92,5 +92,21 @@ namespace gestion_budget.Services
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<(List<DefaultSetting> DefaultSettings, int TotalPages)> GetPagedDefaultSettingsAsync(int pageNumber, int pageSize)
+        {
+            var query = _context.DefaultSettings
+                .Include(ds => ds.User)
+                .Include(ds => ds.Category);
+
+            int totalSettings = await query.CountAsync();
+            var defaultSettings = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            int totalPages = (int)Math.Ceiling((double)totalSettings / pageSize);
+            return (defaultSettings, totalPages);
+        }
     }
 }

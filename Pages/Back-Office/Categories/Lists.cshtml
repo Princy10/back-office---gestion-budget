@@ -27,7 +27,6 @@
         <tbody>
             @foreach (var category in Model.DisplayedCategories)
             {
-                <!-- Ajustement du décalage en fonction de la hiérarchie -->
                 <tr>
                     <td style="padding-left:@((category.ParentCategoryId != null) ? "40px" : "0px");">
                         &nbsp @category.Name
