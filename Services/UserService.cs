@@ -80,6 +80,11 @@ namespace gestion_budget.Services
             return _httpContextAccessor.HttpContext.Session.GetString("UserName");
         }
 
+        public int? GetUserId()
+        {
+            return _httpContextAccessor.HttpContext.Session.GetInt32("UserId");
+        }
+
         public int? GetRoleId()
         {
             return _httpContextAccessor.HttpContext.Session.GetInt32("RoleId");

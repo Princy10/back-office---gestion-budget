@@ -1,4 +1,7 @@
 ﻿@model IEnumerable<gestion_budget.Models.Transaction>
+@{
+    Layout = "_Layout";
+}
 
 <table>
     <thead>
@@ -16,7 +19,7 @@
             <tr>
                 <td>@transaction.Category.Name</td>
                 <td>@transaction.Amount</td>
-                <td>@transaction.TransactionDate.ToString("yyyy-MM-dd")</td>
+                <td>@transaction.TransactionDate.ToString("dd-MM-yyyy HH:mm")</td>
                 <td>@transaction.Note</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@transaction.TransactionId">Modifier</a>
@@ -29,4 +32,6 @@
         }
     </tbody>
 </table>
-<a asp-action="Add">Ajouter une transaction</a>
+<button class="btn btn-success" onclick="window.location='@Url.Action("Add", "Transaction")'">
+    Ajouter une Transaction
+</button>

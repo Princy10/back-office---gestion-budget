@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/transactions")]
 public class TransactionApiController : ControllerBase
 {
     private readonly string _connectionString = "Server=DESKTOP-7A266J8;Database=BudgetManagement;Trusted_Connection=True;Encrypt=True;TrustServerCertificate=True";
@@ -55,7 +55,7 @@ public class TransactionApiController : ControllerBase
         using (var connection = new SqlConnection(_connectionString))
         {
             var command = new SqlCommand(
-                "INSERT INTO Transactions (UserId, CategoryId, Amount, TransactionDate, Note) VALUES (@UserId, @CategoryId, @Amount, @TransactionDate, @Note)",
+                "INSERT INTO Transactions (UserId, CategoryId, Amount, TransactionDate, Note) VALUES (@UserId, @CategoryId, @Amount, CONVERT(DATETIME, @TransactionDate,120), @Note)",
                 connection);
             command.Parameters.AddWithValue("@UserId", transaction.UserId);
             command.Parameters.AddWithValue("@CategoryId", transaction.CategoryId);
@@ -102,4 +102,28 @@ public class TransactionApiController : ControllerBase
         }
         return Ok("Transaction deleted successfully");
     }
+
+    [HttpGet("categories")]
+    public IActionResult GetCategories()
+    {
+        var categories = new List<Category>();
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            var command = new SqlCommand("SELECT CategoryId, Name FROM Categories", connection);
+            connection.Open();
+            using (var reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    categories.Add(new Category
+                    {
+                        CategoryId = reader.GetInt32(0),
+                        Name = reader.GetString(1)
+                    });
+                }
+            }
+        }
+        return Ok(categories);
+    }
+
 }

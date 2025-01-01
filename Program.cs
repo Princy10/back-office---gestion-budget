@@ -1,4 +1,3 @@
-using System;
 using gestion_budget.DAL;
 using gestion_budget.Services;
 using Microsoft.AspNetCore.Authentication.Negotiate;
@@ -26,12 +25,14 @@ builder.Services.AddSession(options =>
 });
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddHttpClient<TransactionService>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:26789/api/transactions");
+});
 builder.Services.AddAuthorization(options =>
 {
     options.FallbackPolicy = options.DefaultPolicy;
 });
-
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages(options =>
 {

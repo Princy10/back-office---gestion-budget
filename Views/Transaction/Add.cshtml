@@ -1,17 +1,61 @@
-﻿@model gestion_budget.Models.Transaction
+﻿@using gestion_budget.Services
+@using gestion_budget.Models
+@inject UserService UserService
+@model gestion_budget.Models.Transaction
+@{
+    Layout = "_Layout";
+    var UserId = UserService.GetUserId();
+}
 
-<form asp-action="Add" method="post">
-    <label>Catégorie :</label>
-    <select asp-for="CategoryId" asp-items="@(new SelectList(ViewBag.Categories, "CategoryId", "Name"))"></select>
+<div class="container mt-4">
+    <h2 class="mb-4">Ajouter une Transaction</h2>
 
-    <label>Montant :</label>
-    <input type="number" asp-for="Amount" step="0.01" required />
+    @if (ViewBag.Categories == null || !((List<gestion_budget.Models.Category>)ViewBag.Categories).Any())
+    {
+        <div class="alert alert-warning">
+            Aucune catégorie disponible. Veuillez ajouter des catégories avant de créer une transaction.
+        </div>
+    }
+    else
+    {
+        <form asp-controller="Transaction" asp-action="Add" method="post">
+            <div class="mb-3">
+                <label for="CategoryId" class="form-label">Catégorie :</label>
+                <select asp-for="CategoryId" name="CategoryId" class="form-select" required>
+                    <option value="">Sélectionnez une catégorie</option>
+                    @foreach (var category in (List<gestion_budget.Models.Category>)ViewBag.Categories)
+                    {
+                        <option value="@category.CategoryId">@category.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
 
-    <label>Date :</label>
-    <input type="date" asp-for="TransactionDate" required />
+            <input type="hidden" name="UserId" value="@UserId" />
 
-    <label>Note :</label>
-    <textarea asp-for="Note"></textarea>
+            <div class="mb-3">
+                <label for="Amount" class="form-label">Montant :</label>
+                <input type="number" asp-for="Amount" name="Amount" step="0.01" class="form-control" required />
+                <span asp-validation-for="Amount" class="text-danger"></span>
+            </div>
 
-    <button type="submit">Ajouter</button>
-</form>
+            <div class="mb-3">
+                <label for="TransactionDate" class="form-label">Date :</label>
+                <input type="datetime-local" asp-for="TransactionDate" name="TransactionDate" class="form-control" required />
+                <span asp-validation-for="TransactionDate" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label for="Note" class="form-label">Note :</label>
+                <textarea asp-for="Note" name="Note" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="Note" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">Ajouter</button>
+            </div>
+        </form>
+
+
+    }
+</div>

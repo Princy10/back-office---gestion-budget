@@ -1,4 +1,7 @@
 ﻿@model gestion_budget.Models.Transaction
+@{
+    Layout = "_Layout";
+}
 
 <form asp-action="Edit" method="post">
     <input type="hidden" asp-for="TransactionId" />
