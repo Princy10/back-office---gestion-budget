@@ -62,6 +62,48 @@ namespace gestion_budget.Controllers
                 });
             }
         }
+        public IActionResult Update(int id)
+        {
+            var transaction = _transactionService.GetTransactions().FirstOrDefault(t => t.TransactionId == id);
+            if (transaction == null)
+            {
+                return NotFound();
+            }
 
+            var categories = _transactionService.GetCategories();
+            ViewBag.Categories = categories;
+            return View(transaction);
+        }
+
+        [HttpPost]
+        public IActionResult Update(Transaction transaction)
+        {
+            try
+            {
+                _transactionService.UpdateTransaction(transaction);
+                return RedirectToAction("List");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                ModelState.AddModelError("", "Une erreur s'est produite lors de la mise à jour de la transaction.");
+                return View(transaction);
+            }
+        }
+        [HttpPost("Transaction/Delete/{id}")]
+        public IActionResult Delete(int id)
+        {
+            try
+            {
+                _transactionService.DeleteTransaction(id);
+                return RedirectToAction("List");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                ModelState.AddModelError("", "Une erreur s'est produite lors de la suppression de la transaction.");
+                return RedirectToAction("List");
+            }
+        }
     }
 }

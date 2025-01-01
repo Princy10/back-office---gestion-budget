@@ -6,6 +6,7 @@
 <table>
     <thead>
         <tr>
+            <th>#</th>
             <th>Catégorie</th>
             <th>Montant</th>
             <th>Date</th>
@@ -17,16 +18,17 @@
         @foreach (var transaction in Model)
         {
             <tr>
+                <td>@transaction.TransactionId</td>
                 <td>@transaction.Category.Name</td>
                 <td>@transaction.Amount</td>
                 <td>@transaction.TransactionDate.ToString("dd-MM-yyyy HH:mm")</td>
                 <td>@transaction.Note</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@transaction.TransactionId">Modifier</a>
-                    <form asp-action="Delete" method="post" style="display:inline;">
-                        <input type="hidden" name="id" value="@transaction.TransactionId" />
-                        <button type="submit">Supprimer</button>
-                    </form>
+                    <button class="btn btn-danger"
+                            onclick="deleteTransaction(@transaction.TransactionId)">
+                        Supprimer
+                    </button>
                 </td>
             </tr>
         }
@@ -35,3 +37,38 @@
 <button class="btn btn-success" onclick="window.location='@Url.Action("Add", "Transaction")'">
     Ajouter une Transaction
 </button>
+
+<script>
+    async function deleteTransaction(transactionId) {
+        const confirmDelete = confirm("Êtes-vous sûr de vouloir supprimer cette transaction ?");
+        if (!confirmDelete) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/Transaction/Delete/${transactionId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "RequestVerificationToken": getAntiForgeryToken()
+                }
+            });
+
+            if (response.ok) {
+                location.reload();
+            } else {
+                const error = await response.json();
+                console.error("Erreur lors de la suppression :", error);
+                alert("Une erreur s'est produite. Veuillez réessayer.");
+            }
+        } catch (err) {
+            console.error("Erreur lors de la requête :", err);
+            alert("Une erreur réseau s'est produite. Veuillez vérifier votre connexion.");
+        }
+    }
+
+    function getAntiForgeryToken() {
+        const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
+        return tokenElement ? tokenElement.value : "";
+    }
+</script>
