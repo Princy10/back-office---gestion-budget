@@ -35,7 +35,9 @@
                 <td>@transaction.TransactionDate.ToString("dd-MM-yyyy HH:mm")</td>
                 <td>@transaction.Note</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@transaction.TransactionId">Modifier</a>
+                    <button class="btn btn-primary" onclick="updateTransaction(@transaction.TransactionId)">
+                        Modifier
+                    </button>
                     <button class="btn btn-danger"
                             onclick="deleteTransaction(@transaction.TransactionId)">
                         Supprimer
@@ -50,6 +52,30 @@
 </button>
 
 <script>
+    async function updateTransaction(transactionId) {
+        try {
+            const response = await fetch(`/Transaction/GetById/${transactionId}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                console.error("Erreur lors de la récupération des données :", error);
+                alert("Une erreur s'est produite. Veuillez réessayer.");
+                return;
+            }
+
+            window.location.href = `/Transaction/Edit/${transactionId}`;
+
+        } catch (err) {
+            console.error("Erreur lors de la requête :", err);
+            alert("Une erreur réseau s'est produite. Veuillez vérifier votre connexion.");
+        }
+    }
+
     async function deleteTransaction(transactionId) {
         const confirmDelete = confirm("Êtes-vous sûr de vouloir supprimer cette transaction ?");
         if (!confirmDelete) {

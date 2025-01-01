@@ -78,7 +78,7 @@ namespace gestion_budget.Services
             {
                 var command = new SqlCommand(
                     @"UPDATE Transactions 
-                      SET UserId = @UserId, CategoryId = @CategoryId, Amount = @Amount, TransactionDate = @TransactionDate, Note = @Note
+                      SET CategoryId = @CategoryId, Amount = @Amount, TransactionDate = @TransactionDate, Note = @Note
                       WHERE TransactionId = @TransactionId",
                     connection);
 

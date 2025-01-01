@@ -3,20 +3,81 @@
     Layout = "_Layout";
 }
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="TransactionId" />
+<div class="container mt-4">
+    <h2>Modifier la Transaction</h2>
 
-    <label>Catégorie :</label>
-    <select asp-for="CategoryId" asp-items="@(new SelectList(ViewBag.Categories, "CategoryId", "Name", Model.CategoryId))"></select>
+    <form id="updateForm" onsubmit="updateTransaction(event)">
+        <input type="hidden" id="transactionId" value="@Model.TransactionId" />
 
-    <label>Montant :</label>
-    <input type="number" asp-for="Amount" step="0.01" required />
+        <div class="form-group mb-3">
+            <label for="categoryId" class="form-label">Catégorie</label>
+            <select id="categoryId" class="form-control" required>
+                <option value="">Sélectionner une catégorie</option>
+                @foreach (var category in ViewBag.Categories)
+                {
+                    <option value="@category.CategoryId"
+                            selected="@(category.CategoryId == Model.CategoryId)">
+                        @category.Name
+                    </option>
+                }
+            </select>
+        </div>
 
-    <label>Date :</label>
-    <input type="date" asp-for="TransactionDate" required />
+        <div class="form-group mb-3">
+            <label for="amount" class="form-label">Montant</label>
+            <input id="amount" class="form-control" type="number" step="0.01"
+                   value="@Model.Amount.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)" required />
+        </div>
 
-    <label>Note :</label>
-    <textarea asp-for="Note"></textarea>
+        <div class="form-group mb-3">
+            <label for="transactionDate" class="form-label">Date</label>
+            <input id="transactionDate" class="form-control" type="datetime-local"
+                   value="@Model.TransactionDate.ToString("yyyy-MM-ddTHH:mm")" required />
+        </div>
 
-    <button type="submit">Enregistrer</button>
-</form>
+        <div class="form-group mb-3">
+            <label for="note" class="form-label">Note</label>
+            <textarea id="note" class="form-control" rows="3">@Model.Note</textarea>
+        </div>
+
+        <div class="form-group mb-3">
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            <a href="/Transaction/List" class="btn btn-secondary">Annuler</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    async function updateTransaction(event) {
+        event.preventDefault();
+
+        const transactionId = document.getElementById('transactionId').value;
+        const data = {
+            transactionId: parseInt(transactionId),
+            categoryId: parseInt(document.getElementById('categoryId').value),
+            amount: parseFloat(document.getElementById('amount').value),
+            transactionDate: document.getElementById('transactionDate').value,
+            note: document.getElementById('note').value
+        };
+
+        try {
+            const response = await fetch(`/Transaction/Update`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                window.location.href = '/Transaction/List';
+            } else {
+                const error = await response.json();
+                alert(error.message || 'Une erreur s\'est produite lors de la mise à jour.');
+            }
+        } catch (error) {
+            console.error('Erreur:', error);
+            alert('Une erreur s\'est produite lors de la mise à jour.');
+        }
+    }
+</script>
