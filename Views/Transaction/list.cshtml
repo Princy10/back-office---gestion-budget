@@ -8,6 +8,7 @@
         <tr>
             <th>#</th>
             <th>Catégorie</th>
+            <th>Type</th>
             <th>Montant</th>
             <th>Date</th>
             <th>Note</th>
@@ -20,6 +21,16 @@
             <tr>
                 <td>@transaction.TransactionId</td>
                 <td>@transaction.Category.Name</td>
+                <td>
+                    @if (transaction.Category.IsIncome)
+                    {
+                        @:Revenu
+                    }
+                    else
+                    {
+                        @:Dépense
+                    }
+                </td>
                 <td>@transaction.Amount</td>
                 <td>@transaction.TransactionDate.ToString("dd-MM-yyyy HH:mm")</td>
                 <td>@transaction.Note</td>
@@ -50,7 +61,6 @@
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "RequestVerificationToken": getAntiForgeryToken()
                 }
             });
 
@@ -65,10 +75,5 @@
             console.error("Erreur lors de la requête :", err);
             alert("Une erreur réseau s'est produite. Veuillez vérifier votre connexion.");
         }
-    }
-
-    function getAntiForgeryToken() {
-        const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
-        return tokenElement ? tokenElement.value : "";
     }
 </script>

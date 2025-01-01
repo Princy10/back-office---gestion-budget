@@ -19,7 +19,7 @@ namespace gestion_budget.Services
             {
                 var command = new SqlCommand(
                     @"SELECT t.TransactionId, t.UserId, t.CategoryId, t.Amount, t.TransactionDate, t.Note, 
-                             c.Name AS CategoryName, c.ParentCategoryId
+                             c.Name AS CategoryName, c.ParentCategoryId, c.IsIncome
                       FROM Transactions t
                       INNER JOIN Categories c ON t.CategoryId = c.CategoryId",
                     connection);
