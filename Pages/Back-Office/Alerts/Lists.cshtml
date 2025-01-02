@@ -1,0 +1,57 @@
+﻿@page
+@model gestion_budget.Pages.Back_Office.Alerts.ListsModel
+@{
+    ViewData["Title"] = "Gestion des Alertes";
+}
+
+<h2 class="mb-4">Liste des Alertes</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (Model.Alerts.Any())
+{
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Message</th>
+                <th>Budget (Catégorie)</th>
+                <th>Date de création</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var alert in Model.Alerts)
+            {
+                <tr>
+                    <td>@alert.Message</td>
+                    <td>@alert.Budget.Category.Name (@alert.Budget.BudgetAmount.ToString("C"))</td>
+                    <td>@alert.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>
+                        <a class="btn btn-sm btn-primary" asp-page="/Back-Office/Alerts/edit" asp-route-id="@alert.AlertId">Modifier</a>
+                        <form method="post" asp-page-handler="Delete" asp-route-id="@alert.AlertId" style="display:inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette alerte ?');">
+                            <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info" role="alert">
+        Aucune alerte disponible.
+    </div>
+}
+
+<div class="d-flex justify-content-between align-items-center mt-4">
+    <button class="btn btn-success">
+        <a class="text-white text-decoration-none" asp-area="" asp-page="/Back-Office/Alerts/add">Ajouter une Alerte</a>
+    </button>
+</div>

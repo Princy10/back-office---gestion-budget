@@ -11,7 +11,7 @@ namespace gestion_budget.Services
         {
             _connectionString = connectionString;
         }
-
+        
         public List<Budget> GetBudgets()
         {
             var budgets = new List<Budget>();

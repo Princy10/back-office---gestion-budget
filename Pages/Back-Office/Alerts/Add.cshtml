@@ -1,0 +1,34 @@
+﻿@page
+@model gestion_budget.Pages.Back_Office.Alerts.AddModel
+@{
+    ViewData["Title"] = "Ajouter une Alerte";
+}
+
+<h2 class="mb-4">Ajouter une Alerte</h2>
+
+<form method="post" class="border p-4 rounded">
+    <input type="hidden" asp-for="Alert.UserId" />
+
+    <div class="mb-3">
+        <label asp-for="Alert.Message" class="form-label">Message</label>
+        <textarea asp-for="Alert.Message" class="form-control" rows="3" required></textarea>
+        <span asp-validation-for="Alert.Message" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Alert.BudgetId" class="form-label">Budget</label>
+        <select asp-for="Alert.BudgetId" class="form-select" required>
+            <option value="">Sélectionner un budget</option>
+            @foreach (var budget in Model.Budgets)
+            {
+                <option value="@budget.BudgetId">@budget.Category.Name (@budget.BudgetAmount.ToString("C"))</option>
+            }
+        </select>
+        <span asp-validation-for="Alert.BudgetId" class="text-danger"></span>
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <button type="submit" class="btn btn-success">Ajouter</button>
+        <a asp-page="/Back-Office/Alerts/lists" class="btn btn-secondary">Annuler</a>
+    </div>
+</form>

@@ -16,7 +16,8 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<DefaultSettingService>();
-builder.Services.AddScoped<BudgetAlertService>();
+builder.Services.AddScoped<AlertService>();
+builder.Services.AddScoped<BudgetServiceEF>();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
