@@ -1,0 +1,84 @@
+﻿@model gestion_budget.Models.Budget
+@{
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <h2>Modifier le Budget</h2>
+
+    <form id="updateForm" onsubmit="updateBudget(event)">
+        <input type="hidden" id="budgetId" value="@Model.BudgetId" />
+
+        <div class="form-group mb-3">
+            <label for="categoryId" class="form-label">Catégorie</label>
+            <select id="categoryId" class="form-control" required>
+                <option value="">Sélectionner une catégorie</option>
+                @foreach (var category in ViewBag.Categories)
+                {
+                    <option value="@category.CategoryId"
+                            selected="@(category.CategoryId == Model.CategoryId)">
+                        @category.Name
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="budgetAmount" class="form-label">Montant du Budget</label>
+            <input id="budgetAmount" class="form-control" type="number" step="0.01"
+                   value="@Model.BudgetAmount.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)" required />
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="startDate" class="form-label">Date de début</label>
+            <input id="startDate" class="form-control" type="date"
+                   value="@Model.StartDate.ToString("yyyy-MM-dd")" required />
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="endDate" class="form-label">Date de fin</label>
+            <input id="endDate" class="form-control" type="date"
+                   value="@Model.EndDate.ToString("yyyy-MM-dd")" required />
+        </div>
+
+        <div class="form-group mb-3">
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            <a href="/Budget/List" class="btn btn-secondary">Annuler</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    async function updateBudget(event) {
+        event.preventDefault();
+
+        const budgetId = document.getElementById('budgetId').value;
+        const data = {
+            budgetId: parseInt(budgetId),
+            categoryId: parseInt(document.getElementById('categoryId').value),
+            budgetAmount: parseFloat(document.getElementById('budgetAmount').value),
+            startDate: document.getElementById('startDate').value,
+            endDate: document.getElementById('endDate').value
+        };
+
+        try {
+            const response = await fetch(`/Budget/Update`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                window.location.href = '/Budget/List';
+            } else {
+                const error = await response.json();
+                alert(error.message || 'Une erreur s\'est produite lors de la mise à jour.');
+            }
+        } catch (error) {
+            console.error('Erreur:', error);
+            alert('Une erreur s\'est produite lors de la mise à jour.');
+        }
+    }
+</script>

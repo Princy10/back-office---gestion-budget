@@ -29,6 +29,10 @@ builder.Services.AddHttpClient<TransactionService>(client =>
 {
     client.BaseAddress = new Uri("http://localhost:26789/api/transactions");
 });
+builder.Services.AddHttpClient<BudgetService>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:26789/api/budgets");
+});
 builder.Services.AddAuthorization(options =>
 {
     options.FallbackPolicy = options.DefaultPolicy;

@@ -1,0 +1,59 @@
+﻿@using gestion_budget.Services
+@using gestion_budget.Models
+@inject UserService UserService
+@model gestion_budget.Models.Budget
+@{
+    Layout = "_Layout";
+    var UserId = UserService.GetUserId();
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Ajouter un Budget</h2>
+
+    @if (ViewBag.Categories == null || !((List<gestion_budget.Models.Category>)ViewBag.Categories).Any())
+    {
+        <div class="alert alert-warning">
+            Aucune catégorie disponible. Veuillez ajouter des catégories avant de créer un budget.
+        </div>
+    }
+    else
+    {
+        <form asp-controller="Budget" asp-action="Add" method="post">
+            <div class="mb-3">
+                <label for="CategoryId" class="form-label">Catégorie :</label>
+                <select asp-for="CategoryId" name="CategoryId" class="form-select" required>
+                    <option value="">Sélectionnez une catégorie</option>
+                    @foreach (var category in (List<gestion_budget.Models.Category>)ViewBag.Categories)
+                    {
+                        <option value="@category.CategoryId">@category.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+
+            <input type="hidden" name="UserId" value="@UserId" />
+
+            <div class="mb-3">
+                <label for="BudgetAmount" class="form-label">Montant du Budget :</label>
+                <input type="number" asp-for="BudgetAmount" name="BudgetAmount" step="0.01" class="form-control" required />
+                <span asp-validation-for="BudgetAmount" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label for="StartDate" class="form-label">Date de début :</label>
+                <input type="date" asp-for="StartDate" name="StartDate" class="form-control" required />
+                <span asp-validation-for="StartDate" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label for="EndDate" class="form-label">Date de fin :</label>
+                <input type="date" asp-for="EndDate" name="EndDate" class="form-control" required />
+                <span asp-validation-for="EndDate" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">Ajouter</button>
+            </div>
+        </form>
+    }
+</div>
