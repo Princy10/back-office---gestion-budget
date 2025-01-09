@@ -119,7 +119,7 @@ namespace gestion_budget.Services
             var categories = new List<Category>();
             using (var connection = new SqlConnection(_connectionString))
             {
-                var command = new SqlCommand("SELECT CategoryId, Name FROM Categories", connection);
+                var command = new SqlCommand("SELECT CategoryId, Name FROM Categories WHERE ParentCategoryId IS NULL", connection);
                 connection.Open();
                 using (var reader = command.ExecuteReader())
                 {
@@ -136,12 +136,13 @@ namespace gestion_budget.Services
             return categories;
         }
 
-        public List<Category> GetSubCategories()
+        public List<Category> GetSubCatByIdCat(int idCat)
         {
             var categories = new List<Category>();
             using (var connection = new SqlConnection(_connectionString))
             {
-                var command = new SqlCommand("SELECT CategoryId, Name FROM Categories WHERE ParentCategoryId IS NOT NULL", connection);
+                var command = new SqlCommand("SELECT CategoryId, Name FROM Categories WHERE ParentCategoryId = @idCat", connection);
+                command.Parameters.AddWithValue("@idCat", idCat);
                 connection.Open();
                 using (var reader = command.ExecuteReader())
                 {

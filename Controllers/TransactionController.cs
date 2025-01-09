@@ -25,8 +25,8 @@ namespace gestion_budget.Controllers
 
         public IActionResult Add()
         {
-            var subCategories = _transactionService.GetSubCategories();
-            ViewBag.Categories = subCategories ?? new List<Category>();
+            var categories = _transactionService.GetCategories();
+            ViewBag.Categories = categories ?? new List<Category>();
             ViewBag.UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             return View();
         }
@@ -66,7 +66,6 @@ namespace gestion_budget.Controllers
         [HttpGet("Transaction/GetById/{id}")]
         public IActionResult GetById(int id)
         {
-            //Console.WriteLine($"Iddd: {id}");
             var transaction = _transactionService.GetTransactions().FirstOrDefault(t => t.TransactionId == id);
             if (transaction == null)
             {
@@ -116,6 +115,13 @@ namespace gestion_budget.Controllers
                 ModelState.AddModelError("", "Une erreur s'est produite lors de la suppression de la transaction.");
                 return RedirectToAction("List");
             }
+        }
+
+        [HttpGet("Transaction/GetSubCategories/{id}")]
+        public IActionResult GetSubCategories(int id)
+        {
+            var subCategories = _transactionService.GetSubCatByIdCat(id);
+            return Json(subCategories);
         }
     }
 }

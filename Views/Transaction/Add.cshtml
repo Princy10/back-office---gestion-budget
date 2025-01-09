@@ -21,7 +21,7 @@
         <form asp-controller="Transaction" asp-action="Add" method="post">
             <div class="mb-3">
                 <label for="CategoryId" class="form-label">Catégorie :</label>
-                <select asp-for="CategoryId" name="CategoryId" class="form-select" required>
+                <select id="CategoryId" name="CategoryId" class="form-select" required>
                     <option value="">Sélectionnez une catégorie</option>
                     @foreach (var category in (List<gestion_budget.Models.Category>)ViewBag.Categories)
                     {
@@ -30,7 +30,12 @@
                 </select>
                 <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
-
+            <div class="mb-3" id="subCategoryContainer" style="display: none;">
+                <label for="SubCategoryId" class="form-label">Sous-catégorie :</label>
+                <select id="SubCategoryId" name="SubCategoryId" class="form-select" required>
+                    <option value="">Sélectionnez une sous-catégorie</option>
+                </select>
+            </div>
             <input type="hidden" name="UserId" value="@UserId" />
 
             <div class="mb-3">
@@ -59,3 +64,33 @@
 
     }
 </div>
+<script>
+    document.getElementById('CategoryId').addEventListener('change', function() {
+        const categoryId = this.value;
+        const subCategoryContainer = document.getElementById('subCategoryContainer');
+        const subCategorySelect = document.getElementById('SubCategoryId');
+
+        if (categoryId) {
+            fetch(`/Transaction/GetSubCategories/${categoryId}`)
+                .then(response => response.json())
+                .then(data => {
+                    subCategorySelect.innerHTML = '<option value="">Sélectionnez une sous-catégorie</option>';
+
+                    data.forEach(category => {
+                        const option = document.createElement('option');
+                        option.value = category.categoryId;
+                        option.textContent = category.name;
+                        subCategorySelect.appendChild(option);
+                    });
+
+                    subCategoryContainer.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Erreur lors du chargement des sous-catégories:', error);
+                    subCategoryContainer.style.display = 'none';
+                });
+        } else {
+            subCategoryContainer.style.display = 'none';
+        }
+    });
+</script>
