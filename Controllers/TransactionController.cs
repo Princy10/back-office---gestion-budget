@@ -32,13 +32,13 @@ namespace gestion_budget.Controllers
         }
 
         [HttpPost]
-        public IActionResult Add(int CategoryId, int UserId, decimal Amount, DateTime TransactionDate, string Note)
+        public IActionResult Add(int CategoryId, int? SubCategoryId, int UserId, decimal Amount, DateTime TransactionDate, string Note)
         {
             try
             {
                 var transaction = new Transaction
                 {
-                    CategoryId = CategoryId,
+                    CategoryId = SubCategoryId ?? CategoryId, // Prioriser la sous-catégorie si sélectionnée
                     UserId = UserId,
                     Amount = Amount,
                     TransactionDate = TransactionDate,
@@ -54,7 +54,7 @@ namespace gestion_budget.Controllers
                 ModelState.AddModelError("", "Une erreur s'est produite lors de l'insertion de la transaction.");
                 return View(new Transaction
                 {
-                    CategoryId = CategoryId,
+                    CategoryId = SubCategoryId ?? CategoryId,
                     UserId = UserId,
                     Amount = Amount,
                     TransactionDate = TransactionDate,
@@ -62,6 +62,7 @@ namespace gestion_budget.Controllers
                 });
             }
         }
+
 
         [HttpGet("Transaction/GetById/{id}")]
         public IActionResult GetById(int id)

@@ -32,10 +32,11 @@
             </div>
             <div class="mb-3" id="subCategoryContainer" style="display: none;">
                 <label for="SubCategoryId" class="form-label">Sous-catégorie :</label>
-                <select id="SubCategoryId" name="SubCategoryId" class="form-select" required>
+                <select id="SubCategoryId" name="SubCategoryId" class="form-select">
                     <option value="">Sélectionnez une sous-catégorie</option>
                 </select>
             </div>
+
             <input type="hidden" name="UserId" value="@UserId" />
 
             <div class="mb-3">
@@ -65,7 +66,7 @@
     }
 </div>
 <script>
-    document.getElementById('CategoryId').addEventListener('change', function() {
+    document.getElementById('CategoryId').addEventListener('change', function () {
         const categoryId = this.value;
         const subCategoryContainer = document.getElementById('subCategoryContainer');
         const subCategorySelect = document.getElementById('SubCategoryId');
@@ -76,10 +77,10 @@
                 .then(data => {
                     subCategorySelect.innerHTML = '<option value="">Sélectionnez une sous-catégorie</option>';
 
-                    data.forEach(category => {
+                    data.forEach(subCategory => {
                         const option = document.createElement('option');
-                        option.value = category.categoryId;
-                        option.textContent = category.name;
+                        option.value = subCategory.categoryId;
+                        option.textContent = subCategory.name;
                         subCategorySelect.appendChild(option);
                     });
 
