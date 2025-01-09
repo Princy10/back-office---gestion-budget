@@ -135,5 +135,27 @@ namespace gestion_budget.Services
             }
             return categories;
         }
+
+        public List<Category> GetSubCategories()
+        {
+            var categories = new List<Category>();
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var command = new SqlCommand("SELECT CategoryId, Name FROM Categories WHERE ParentCategoryId IS NOT NULL", connection);
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        categories.Add(new Category
+                        {
+                            CategoryId = reader.GetInt32(0),
+                            Name = reader.GetString(1)
+                        });
+                    }
+                }
+            }
+            return categories;
+        }
     }
 }

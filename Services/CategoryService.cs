@@ -19,7 +19,12 @@ namespace gestion_budget.Services
                 .Where(c => c.ParentCategoryId == null)
                 .ToListAsync();
         }
-
+        public async Task<List<Category>> GetSubCategoriesAsync()
+        {
+            return await _context.Categories
+                .Where(c => c.ParentCategoryId != null)
+                .ToListAsync();
+        }
         public async Task<Category?> GetCategoryByIdAsync(int id)
         {
             return await _context.Categories

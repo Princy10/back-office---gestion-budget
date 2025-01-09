@@ -25,8 +25,8 @@ namespace gestion_budget.Controllers
 
         public IActionResult Add()
         {
-            var categories = _transactionService.GetCategories();
-            ViewBag.Categories = categories ?? new List<Category>();
+            var subCategories = _transactionService.GetSubCategories();
+            ViewBag.Categories = subCategories ?? new List<Category>();
             ViewBag.UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             return View();
         }

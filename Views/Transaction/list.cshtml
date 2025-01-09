@@ -32,11 +32,11 @@
                 <td>
                     @if (@transaction.Category.IsIncome == true)
                     {
-                        <span class="text-success">+@transaction.Amount</span>
+                        <span class="text-success">+@transaction.Amount.ToString("N0") Ar</span>
                     }
                     else
                     {
-                        <span class="text-danger">-@transaction.Amount</span>
+                        <span class="text-danger">-@transaction.Amount.ToString("N0") Ar</span>
                     }
                 </td>
                 <td>@transaction.TransactionDate.ToString("dd-MM-yyyy HH:mm")</td>

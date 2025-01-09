@@ -2,7 +2,6 @@
 using System.Text;
 using gestion_budget.DAL;
 using gestion_budget.Models;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace gestion_budget.Services
@@ -22,7 +21,7 @@ namespace gestion_budget.Services
         {
             if (await _dbContext.Users.AnyAsync(u => u.Email == email))
             {
-                return false; // Email déjà utilisé
+                return false;
             }
 
             var user = new User
@@ -30,7 +29,7 @@ namespace gestion_budget.Services
                 UserName = userName,
                 Email = email,
                 PasswordHash = HashPassword(password),
-                RoleId = 2 // Par défaut 'User'
+                RoleId = 2
             };
 
             await _dbContext.Users.AddAsync(user);
@@ -44,7 +43,7 @@ namespace gestion_budget.Services
 
             if (user == null || user.PasswordHash != HashPassword(password))
             {
-                return false; // Identifiants invalides
+                return false;
             }
 
             var session = _httpContextAccessor.HttpContext.Session;
