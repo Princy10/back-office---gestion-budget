@@ -20,7 +20,7 @@
             <tr>
                 <td>@transaction.Category.Name</td>
                 <td>
-                    @if (transaction.Category.IsIncome)
+                    @if (@transaction.Category.IsIncome == true)
                     {
                         @:Revenu
                     }
@@ -30,13 +30,13 @@
                     }
                 </td>
                 <td>
-                    @if (transaction.Category.IsIncome)
+                    @if (@transaction.Category.IsIncome == true)
                     {
-                        <span class="text-success">+ @transaction.Amount</span>
+                        <span class="text-success">+@transaction.Amount</span>
                     }
                     else
                     {
-                        <span class="text-danger">- @transaction.Amount</span>
+                        <span class="text-danger">-@transaction.Amount</span>
                     }
                 </td>
                 <td>@transaction.TransactionDate.ToString("dd-MM-yyyy HH:mm")</td>

@@ -1,4 +1,6 @@
-﻿using gestion_budget.Models;
+﻿using System.Data;
+using gestion_budget.Models;
+using gestion_budget.Models.Views;
 using Microsoft.Data.SqlClient;
 
 namespace gestion_budget.Services
@@ -41,6 +43,7 @@ namespace gestion_budget.Services
                             {
                                 CategoryId = reader.GetInt32(2),
                                 Name = reader.GetString(6),
+                                IsIncome = reader.GetBoolean(8),
                                 ParentCategoryId = reader.IsDBNull(7) ? null : reader.GetInt32(7)
                             }
                         });

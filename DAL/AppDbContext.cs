@@ -1,4 +1,5 @@
 ﻿using gestion_budget.Models;
+using gestion_budget.Models.Views;
 using Microsoft.EntityFrameworkCore;
 
 namespace gestion_budget.DAL
@@ -17,6 +18,7 @@ namespace gestion_budget.DAL
         public DbSet<Alert> Alerts { get; set; }
         public DbSet<ImportedTransaction> ImportedTransactions { get; set; }
         public DbSet<DefaultSetting> DefaultSettings { get; set; }
+        public DbSet<UserBalance> UserBalances { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -78,6 +80,13 @@ namespace gestion_budget.DAL
                 .WithMany()
                 .HasForeignKey(ds => ds.CategoryId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder
+            .Entity<UserBalance>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToView("UserBalance");
+            });
 
             base.OnModelCreating(modelBuilder);
         }

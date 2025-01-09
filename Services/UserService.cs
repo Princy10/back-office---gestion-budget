@@ -2,6 +2,7 @@
 using System.Text;
 using gestion_budget.DAL;
 using gestion_budget.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace gestion_budget.Services
@@ -36,6 +37,7 @@ namespace gestion_budget.Services
             await _dbContext.SaveChangesAsync();
             return true;
         }
+
         public async Task<bool> LoginAsync(string email, string password)
         {
             var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.Email == email);
@@ -75,6 +77,7 @@ namespace gestion_budget.Services
             var hash = sha256.ComputeHash(bytes);
             return Convert.ToBase64String(hash);
         }
+
         public string GetUserName()
         {
             return _httpContextAccessor.HttpContext.Session.GetString("UserName");
@@ -100,6 +103,16 @@ namespace gestion_budget.Services
             return await _dbContext.Users
                 .Where(u => u.RoleId == 2)
                 .ToListAsync();
+        }
+
+        public async Task<decimal?> GetUserBalanceByIdAsync(int userId)
+        {
+            var balance = await _dbContext.UserBalances
+                .Where(ub => ub.UserId == userId)
+                .Select(ub => ub.Balance)
+                .FirstOrDefaultAsync();
+
+            return balance;
         }
     }
 }
