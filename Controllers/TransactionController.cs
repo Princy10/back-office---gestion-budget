@@ -17,9 +17,12 @@ namespace gestion_budget.Controllers
             _transactionService = new TransactionService(connectionString);
         }
 
-        public IActionResult List()
+        public IActionResult List(int page = 1, int pageSize = 10)
         {
-            var transactions = _transactionService.GetTransactions();
+            var transactions = _transactionService.GetTransactions(page, pageSize);
+            var totalTransactions = _transactionService.GetTotalTransactionsCount();
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalTransactions / pageSize);
+            ViewBag.CurrentPage = page;
             return View(transactions);
         }
 
@@ -67,7 +70,7 @@ namespace gestion_budget.Controllers
         [HttpGet("Transaction/GetById/{id}")]
         public IActionResult GetById(int id)
         {
-            var transaction = _transactionService.GetTransactions().FirstOrDefault(t => t.TransactionId == id);
+            var transaction = _transactionService.GetTransactionById(id);
             if (transaction == null)
             {
                 return NotFound();
@@ -75,18 +78,21 @@ namespace gestion_budget.Controllers
 
             return Json(transaction);
         }
+
         [HttpGet("Transaction/Edit/{id}")]
         public IActionResult Edit(int id)
         {
-            var transaction = _transactionService.GetTransactions().FirstOrDefault(t => t.TransactionId == id);
+            var transaction = _transactionService.GetTransactionById(id);
             if (transaction == null)
             {
                 return NotFound();
             }
+
             var categories = _transactionService.GetCategories();
-            ViewBag.Categories = categories;
+            ViewBag.Categories = categories ?? new List<Category>();
             return View(transaction);
         }
+
         [HttpPut("Transaction/Update")]
         public IActionResult Update([FromBody] Transaction transaction)
         {

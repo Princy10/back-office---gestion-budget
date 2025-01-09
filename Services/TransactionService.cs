@@ -14,17 +14,23 @@ namespace gestion_budget.Services
             _connectionString = connectionString;
         }
 
-        public List<Transaction> GetTransactions()
+        public List<Transaction> GetTransactions(int page, int pageSize)
         {
             var transactions = new List<Transaction>();
             using (var connection = new SqlConnection(_connectionString))
             {
+                var offset = (page - 1) * pageSize;
                 var command = new SqlCommand(
                     @"SELECT t.TransactionId, t.UserId, t.CategoryId, t.Amount, t.TransactionDate, t.Note, 
-                             c.Name AS CategoryName, c.ParentCategoryId, c.IsIncome
-                      FROM Transactions t
-                      INNER JOIN Categories c ON t.CategoryId = c.CategoryId",
+                     c.Name AS CategoryName, c.ParentCategoryId, c.IsIncome
+              FROM Transactions t
+              INNER JOIN Categories c ON t.CategoryId = c.CategoryId
+              ORDER BY t.TransactionDate DESC
+              OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY",
                     connection);
+
+                command.Parameters.AddWithValue("@Offset", offset);
+                command.Parameters.AddWithValue("@PageSize", pageSize);
 
                 connection.Open();
                 using (var reader = command.ExecuteReader())
@@ -52,6 +58,7 @@ namespace gestion_budget.Services
             }
             return transactions;
         }
+
 
         public void AddTransaction(Transaction transaction)
         {
@@ -158,5 +165,57 @@ namespace gestion_budget.Services
             }
             return categories;
         }
+
+        public int GetTotalTransactionsCount()
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var command = new SqlCommand("SELECT COUNT(*) FROM Transactions", connection);
+                connection.Open();
+                return (int)command.ExecuteScalar();
+            }
+        }
+
+        public Transaction GetTransactionById(int transactionId)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var command = new SqlCommand(
+                    @"SELECT t.TransactionId, t.UserId, t.CategoryId, t.Amount, t.TransactionDate, t.Note, 
+                     c.Name AS CategoryName, c.ParentCategoryId, c.IsIncome
+              FROM Transactions t
+              INNER JOIN Categories c ON t.CategoryId = c.CategoryId
+              WHERE t.TransactionId = @TransactionId",
+                    connection);
+
+                command.Parameters.AddWithValue("@TransactionId", transactionId);
+
+                connection.Open();
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return new Transaction
+                        {
+                            TransactionId = reader.GetInt32(0),
+                            UserId = reader.GetInt32(1),
+                            CategoryId = reader.GetInt32(2),
+                            Amount = reader.GetDecimal(3),
+                            TransactionDate = reader.GetDateTime(4),
+                            Note = reader.IsDBNull(5) ? null : reader.GetString(5),
+                            Category = new Category
+                            {
+                                CategoryId = reader.GetInt32(2),
+                                Name = reader.GetString(6),
+                                IsIncome = reader.GetBoolean(8),
+                                ParentCategoryId = reader.IsDBNull(7) ? null : reader.GetInt32(7)
+                            }
+                        };
+                    }
+                }
+            }
+            return null;
+        }
+
     }
 }

@@ -19,18 +19,9 @@
         {
             <tr>
                 <td>@transaction.Category.Name</td>
+                <td>@(transaction.Category.IsIncome ? "Revenu" : "Dépense")</td>
                 <td>
-                    @if (@transaction.Category.IsIncome == true)
-                    {
-                        @:Revenu
-                    }
-                    else
-                    {
-                        @:Dépense
-                    }
-                </td>
-                <td>
-                    @if (@transaction.Category.IsIncome == true)
+                    @if (transaction.Category.IsIncome)
                     {
                         <span class="text-success">+@transaction.Amount.ToString("N0") Ar</span>
                     }
@@ -42,17 +33,22 @@
                 <td>@transaction.TransactionDate.ToString("dd-MM-yyyy HH:mm")</td>
                 <td>@transaction.Note</td>
                 <td>
-                    <button class="btn btn-primary btn-sm" onclick="updateTransaction(@transaction.TransactionId)">
-                        Modifier
-                    </button>
-                    <button class="btn btn-danger btn-sm" onclick="deleteTransaction(@transaction.TransactionId)">
-                        Supprimer
-                    </button>
+                    <button class="btn btn-primary btn-sm" onclick="updateTransaction(@transaction.TransactionId)">Modifier</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteTransaction(@transaction.TransactionId)">Supprimer</button>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+<div class="pagination">
+    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+    {
+        <a class="btn @(i == ViewBag.CurrentPage ? "btn-primary" : "btn-secondary")" href="@Url.Action("List", "Transaction", new { page = i, pageSize = ViewBag.PageSize })">
+            @i
+        </a>
+    }
+</div>
 
 <button class="btn btn-success" onclick="window.location='@Url.Action("Add", "Transaction")'">
     Ajouter une Transaction
