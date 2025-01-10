@@ -41,7 +41,7 @@ namespace gestion_budget.Controllers
             {
                 var transaction = new Transaction
                 {
-                    CategoryId = SubCategoryId ?? CategoryId, // Prioriser la sous-catégorie si sélectionnée
+                    CategoryId = SubCategoryId ?? CategoryId,
                     UserId = UserId,
                     Amount = Amount,
                     TransactionDate = TransactionDate,

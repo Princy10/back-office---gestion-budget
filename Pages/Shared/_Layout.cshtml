@@ -63,13 +63,16 @@
                         }
                     </ul>
 
-                    @if (userBalance.HasValue)
+                    @if (roleId == 2)
                     {
-                        <span class="nav-link text-dark">Solde: @userBalance.Value.ToString("N0") Ar</span>
-                    }
-                    else
-                    {
-                        <span class="nav-link text-dark">Solde: N/A</span>
+                        @if (userBalance.HasValue)
+                        {
+                            <span class="nav-link text-dark">Solde: @userBalance.Value.ToString("N0") Ar</span>
+                        }
+                        else
+                        {
+                            <span class="nav-link text-dark">Solde: N/A</span>
+                        }
                     }
                     &nbsp;
                     <form method="get" asp-page="/Back-Office/Account/Logout" style="display:inline;">
