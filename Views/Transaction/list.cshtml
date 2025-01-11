@@ -97,9 +97,12 @@
     }
 </div>
 <br />
-<button class="btn btn-success" onclick="window.location='@Url.Action("Add", "Transaction")'">
-    Ajouter une Transaction
-</button>
+<div class="col-12">
+    <button type="button" class="btn btn-success" onclick="window.location='@Url.Action("Add", "Transaction")'">
+        Ajouter une Transaction
+    </button>
+    <button type="button" class="btn btn-info" onclick="exportData()">Exporter les données</button>
+</div>
 
 <script>
     async function updateTransaction(transactionId) {
@@ -158,6 +161,25 @@
 
         let url = '/Transaction/List?page=1&pageSize=10';
         if (category) url += `&categoryId=${category}`;
+        if (type) url += `&isIncome=${type === 'true'}`;
+        if (startDate) url += `&startDate=${startDate}`;
+        if (endDate) url += `&endDate=${endDate}`;
+        if (minAmount) url += `&minAmount=${minAmount}`;
+        if (maxAmount) url += `&maxAmount=${maxAmount}`;
+
+        window.location.href = url;
+    }
+
+    function exportData() {
+        const category = document.getElementById('filterCategory').value;
+        const type = document.getElementById('filterType').value;
+        const startDate = document.getElementById('filterStartDate').value;
+        const endDate = document.getElementById('filterEndDate').value;
+        const minAmount = document.getElementById('filterMinAmount').value;
+        const maxAmount = document.getElementById('filterMaxAmount').value;
+
+        let url = '/Transaction/Export';
+        if (category) url += `?categoryId=${category}`;
         if (type) url += `&isIncome=${type === 'true'}`;
         if (startDate) url += `&startDate=${startDate}`;
         if (endDate) url += `&endDate=${endDate}`;

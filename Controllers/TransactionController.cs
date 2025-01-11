@@ -1,8 +1,10 @@
 ﻿using System.Security.Claims;
+using System.Text;
 using gestion_budget.Models;
 using gestion_budget.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
 
 namespace gestion_budget.Controllers
 {
@@ -131,5 +133,58 @@ namespace gestion_budget.Controllers
             var subCategories = _transactionService.GetSubCatByIdCat(id);
             return Json(subCategories);
         }
+
+        public IActionResult Export(int? categoryId = null, bool? isIncome = null, DateTime? startDate = null, DateTime? endDate = null, decimal? minAmount = null, decimal? maxAmount = null)
+        {
+            var transactions = _transactionService.GetTransactions(1, int.MaxValue, categoryId, isIncome, startDate, endDate, minAmount, maxAmount);
+
+            var csv = new StringBuilder();
+            csv.AppendLine("TransactionId,Category,Type,Amount,Date,Note");
+
+            foreach (var transaction in transactions)
+            {
+                var type = transaction.Category.IsIncome ? "Revenu" : "Dépense";
+                var amount = transaction.Category.IsIncome ? $"+{transaction.Amount:N0}" : $"-{transaction.Amount:N0}";
+                csv.AppendLine($"{transaction.TransactionId},{transaction.Category.Name},{type},{amount},{transaction.TransactionDate:dd-MM-yyyy HH:mm},{transaction.Note}");
+            }
+
+            var fileName = "transactions_export.csv";
+            return File(Encoding.UTF8.GetBytes(csv.ToString()), "text/csv", fileName);
+        }
+
+        public IActionResult ExportExcel(int? categoryId = null, bool? isIncome = null, DateTime? startDate = null, DateTime? endDate = null, decimal? minAmount = null, decimal? maxAmount = null)
+        {
+            var transactions = _transactionService.GetTransactions(1, int.MaxValue, categoryId, isIncome, startDate, endDate, minAmount, maxAmount);
+
+            using (var package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("Transactions");
+                worksheet.Cells[1, 1].Value = "TransactionId";
+                worksheet.Cells[1, 2].Value = "Category";
+                worksheet.Cells[1, 3].Value = "Type";
+                worksheet.Cells[1, 4].Value = "Amount";
+                worksheet.Cells[1, 5].Value = "Date";
+                worksheet.Cells[1, 6].Value = "Note";
+
+                int row = 2;
+                foreach (var transaction in transactions)
+                {
+                    var type = transaction.Category.IsIncome ? "Revenu" : "Dépense";
+                    var amount = transaction.Category.IsIncome ? $"+{transaction.Amount:N0}" : $"-{transaction.Amount:N0}";
+                    worksheet.Cells[row, 1].Value = transaction.TransactionId;
+                    worksheet.Cells[row, 2].Value = transaction.Category.Name;
+                    worksheet.Cells[row, 3].Value = type;
+                    worksheet.Cells[row, 4].Value = amount;
+                    worksheet.Cells[row, 5].Value = transaction.TransactionDate.ToString("dd-MM-yyyy HH:mm");
+                    worksheet.Cells[row, 6].Value = transaction.Note;
+                    row++;
+                }
+
+                var fileContents = package.GetAsByteArray();
+                var fileName = "transactions_export.xlsx";
+                return File(fileContents, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            }
+        }
+
     }
 }
