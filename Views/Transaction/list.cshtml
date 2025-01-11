@@ -36,11 +36,11 @@
             </div>
             <div class="col-md-3">
                 <label class="form-label">Montant minimum</label>
-                <input type="number" class="form-control" id="filterMinAmount" value="0">
+                <input type="number" class="form-control" id="filterMinAmount">
             </div>
             <div class="col-md-3">
                 <label class="form-label">Montant maximum</label>
-                <input type="number" class="form-control" id="filterMaxAmount" value="0">
+                <input type="number" class="form-control" id="filterMaxAmount">
             </div>
             <div class="col-12">
                 <button type="button" class="btn btn-primary" onclick="applyFilters()">Appliquer les filtres</button>
@@ -148,7 +148,7 @@
         }
     }
 
-    function applyFilters() {
+        function applyFilters() {
         const category = document.getElementById('filterCategory').value;
         const type = document.getElementById('filterType').value;
         const startDate = document.getElementById('filterStartDate').value;
@@ -156,34 +156,14 @@
         const minAmount = document.getElementById('filterMinAmount').value;
         const maxAmount = document.getElementById('filterMaxAmount').value;
 
-        console.log("Filtres appliqués :");
-        console.log("Catégorie :", category);
-        console.log("Type :", type);
-        console.log("Date début :", startDate);
-        console.log("Date fin :", endDate);
-        console.log("Montant minimum :", minAmount);
-        console.log("Montant maximum :", maxAmount);
+        let url = '/Transaction/List?page=1&pageSize=10';
+        if (category) url += `&categoryId=${category}`;
+        if (type) url += `&isIncome=${type === 'true'}`;
+        if (startDate) url += `&startDate=${startDate}`;
+        if (endDate) url += `&endDate=${endDate}`;
+        if (minAmount) url += `&minAmount=${minAmount}`;
+        if (maxAmount) url += `&maxAmount=${maxAmount}`;
 
-        fetch("/Transaction/List", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                category: category,
-                type: type,
-                startDate: startDate,
-                endDate: endDate,
-                minAmount: minAmount,
-                maxAmount: maxAmount
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Réponse du serveur :", data);
-        })
-        .catch(error => {
-            console.error("Erreur lors de la récupération des transactions :", error);
-        });
+        window.location.href = url;
     }
 </script>

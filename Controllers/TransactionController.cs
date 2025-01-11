@@ -17,9 +17,9 @@ namespace gestion_budget.Controllers
             _transactionService = new TransactionService(connectionString);
         }
 
-        public IActionResult List(int page = 1, int pageSize = 10)
+        public IActionResult List(int page = 1, int pageSize = 10, int? categoryId = null, bool? isIncome = null, DateTime? startDate = null, DateTime? endDate = null, decimal? minAmount = null, decimal? maxAmount = null)
         {
-            var transactions = _transactionService.GetTransactions(page, pageSize);
+            var transactions = _transactionService.GetTransactions(page, pageSize, categoryId, isIncome, startDate, endDate, minAmount, maxAmount);
             var totalTransactions = _transactionService.GetTotalTransactionsCount();
             var subcategories = _transactionService.GetSubCat();
             ViewBag.subcategories = subcategories ?? new List<Category>();
@@ -27,7 +27,6 @@ namespace gestion_budget.Controllers
             ViewBag.CurrentPage = page;
             return View(transactions);
         }
-
         public IActionResult Add()
         {
             var categories = _transactionService.GetCategories();

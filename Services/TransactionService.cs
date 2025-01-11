@@ -14,20 +14,59 @@ namespace gestion_budget.Services
             _connectionString = connectionString;
         }
 
-        public List<Transaction> GetTransactions(int page, int pageSize)
+        public List<Transaction> GetTransactions(int page, int pageSize, int? categoryId = null, bool? isIncome = null, DateTime? startDate = null, DateTime? endDate = null, decimal? minAmount = null, decimal? maxAmount = null)
         {
             var transactions = new List<Transaction>();
             using (var connection = new SqlConnection(_connectionString))
             {
                 var offset = (page - 1) * pageSize;
-                var command = new SqlCommand(
-                    @"SELECT t.TransactionId, t.UserId, t.CategoryId, t.Amount, t.TransactionDate, t.Note, 
+                var query = @"SELECT t.TransactionId, t.UserId, t.CategoryId, t.Amount, t.TransactionDate, t.Note, 
                      c.Name AS CategoryName, c.ParentCategoryId, c.IsIncome
-              FROM Transactions t
-              INNER JOIN Categories c ON t.CategoryId = c.CategoryId
-              ORDER BY t.TransactionDate DESC
-              OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY",
-                    connection);
+                     FROM Transactions t
+                     INNER JOIN Categories c ON t.CategoryId = c.CategoryId
+                     WHERE 1 = 1";
+
+                if (categoryId.HasValue)
+                {
+                    query += " AND t.CategoryId = @CategoryId";
+                }
+                if (isIncome.HasValue)
+                {
+                    query += " AND c.IsIncome = @IsIncome";
+                }
+                if (startDate.HasValue)
+                {
+                    query += " AND t.TransactionDate >= @StartDate";
+                }
+                if (endDate.HasValue)
+                {
+                    query += " AND t.TransactionDate <= @EndDate";
+                }
+                if (minAmount.HasValue)
+                {
+                    query += " AND t.Amount >= @MinAmount";
+                }
+                if (maxAmount.HasValue)
+                {
+                    query += " AND t.Amount <= @MaxAmount";
+                }
+
+                query += " ORDER BY t.TransactionDate DESC OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+
+                var command = new SqlCommand(query, connection);
+
+                if (categoryId.HasValue)
+                    command.Parameters.AddWithValue("@CategoryId", categoryId);
+                if (isIncome.HasValue)
+                    command.Parameters.AddWithValue("@IsIncome", isIncome);
+                if (startDate.HasValue)
+                    command.Parameters.AddWithValue("@StartDate", startDate);
+                if (endDate.HasValue)
+                    command.Parameters.AddWithValue("@EndDate", endDate);
+                if (minAmount.HasValue)
+                    command.Parameters.AddWithValue("@MinAmount", minAmount);
+                if (maxAmount.HasValue)
+                    command.Parameters.AddWithValue("@MaxAmount", maxAmount);
 
                 command.Parameters.AddWithValue("@Offset", offset);
                 command.Parameters.AddWithValue("@PageSize", pageSize);
@@ -58,7 +97,6 @@ namespace gestion_budget.Services
             }
             return transactions;
         }
-
 
         public void AddTransaction(Transaction transaction)
         {
