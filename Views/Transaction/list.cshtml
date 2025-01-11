@@ -2,7 +2,6 @@
 @{
     Layout = "_Layout";
 }
-
 <div class="card mb-4">
     <div class="card-header">
         <h5>Filtres avancés</h5>
@@ -13,6 +12,10 @@
                 <label class="form-label">Catégorie</label>
                 <select class="form-select" id="filterCategory">
                     <option value="">Toutes les catégories</option>
+                    @foreach (var subcategory in (List<gestion_budget.Models.Category>)ViewBag.subcategories)
+                    {
+                        <option value="@subcategory.CategoryId">@subcategory.Name</option>
+                    }
                 </select>
             </div>
             <div class="col-md-3">
@@ -33,16 +36,16 @@
             </div>
             <div class="col-md-3">
                 <label class="form-label">Montant minimum</label>
-                <input type="number" class="form-control" id="filterMinAmount">
+                <input type="number" class="form-control" id="filterMinAmount" value="0">
             </div>
             <div class="col-md-3">
                 <label class="form-label">Montant maximum</label>
-                <input type="number" class="form-control" id="filterMaxAmount">
+                <input type="number" class="form-control" id="filterMaxAmount" value="0">
             </div>
-            @* <div class="col-12"> *@
-            @*     <button type="button" class="btn btn-primary" onclick="applyFilters()">Appliquer les filtres</button> *@
-            @*     <button type="button" class="btn btn-secondary" onclick="resetFilters()">Réinitialiser</button> *@
-            @* </div> *@
+            <div class="col-12">
+                <button type="button" class="btn btn-primary" onclick="applyFilters()">Appliquer les filtres</button>
+                <button type="button" class="btn btn-secondary" onclick="resetFilters()">Réinitialiser</button>
+            </div>
         </form>
     </div>
 </div>
@@ -145,48 +148,42 @@
         }
     }
 
-        document.addEventListener("DOMContentLoaded", () => {
-        const originalRows = Array.from(document.querySelectorAll("table tbody tr"));
+    function applyFilters() {
+        const category = document.getElementById('filterCategory').value;
+        const type = document.getElementById('filterType').value;
+        const startDate = document.getElementById('filterStartDate').value;
+        const endDate = document.getElementById('filterEndDate').value;
+        const minAmount = document.getElementById('filterMinAmount').value;
+        const maxAmount = document.getElementById('filterMaxAmount').value;
 
-        document.getElementById("filterForm").addEventListener("input", applyFilters);
+        console.log("Filtres appliqués :");
+        console.log("Catégorie :", category);
+        console.log("Type :", type);
+        console.log("Date début :", startDate);
+        console.log("Date fin :", endDate);
+        console.log("Montant minimum :", minAmount);
+        console.log("Montant maximum :", maxAmount);
 
-        function applyFilters() {
-            const filterCategory = document.getElementById("filterCategory").value;
-            const filterType = document.getElementById("filterType").value;
-            const filterStartDate = document.getElementById("filterStartDate").value;
-            const filterEndDate = document.getElementById("filterEndDate").value;
-            const filterMinAmount = parseFloat(document.getElementById("filterMinAmount").value) || null;
-            const filterMaxAmount = parseFloat(document.getElementById("filterMaxAmount").value) || null;
-
-            const filteredRows = originalRows.filter(row => {
-                const category = row.cells[0].textContent.trim();
-                const type = row.cells[1].textContent.trim() === "Revenu" ? "true" : "false";
-                const amount = parseFloat(row.cells[2].textContent.replace(/[^\d.-]/g, ""));
-                const date = new Date(row.cells[3].textContent.trim());
-
-                return (
-                    (!filterCategory || category === filterCategory) &&
-                    (!filterType || type === filterType) &&
-                    (!filterStartDate || date >= new Date(filterStartDate)) &&
-                    (!filterEndDate || date <= new Date(filterEndDate)) &&
-                    (filterMinAmount === null || amount >= filterMinAmount) &&
-                    (filterMaxAmount === null || amount <= filterMaxAmount)
-                );
-            });
-
-            updateTable(filteredRows);
-        }
-
-        function updateTable(rows) {
-            const tbody = document.querySelector("table tbody");
-            tbody.innerHTML = "";
-            rows.forEach(row => tbody.appendChild(row));
-        }
-
-        document.getElementById("resetFilters").addEventListener("click", () => {
-            document.getElementById("filterForm").reset();
-            updateTable(originalRows);
+        fetch("/Transaction/List", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                category: category,
+                type: type,
+                startDate: startDate,
+                endDate: endDate,
+                minAmount: minAmount,
+                maxAmount: maxAmount
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Réponse du serveur :", data);
+        })
+        .catch(error => {
+            console.error("Erreur lors de la récupération des transactions :", error);
         });
-    });
-
+    }
 </script>

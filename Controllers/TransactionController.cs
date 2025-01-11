@@ -21,6 +21,8 @@ namespace gestion_budget.Controllers
         {
             var transactions = _transactionService.GetTransactions(page, pageSize);
             var totalTransactions = _transactionService.GetTotalTransactionsCount();
+            var subcategories = _transactionService.GetSubCat();
+            ViewBag.subcategories = subcategories ?? new List<Category>();
             ViewBag.TotalPages = (int)Math.Ceiling((double)totalTransactions / pageSize);
             ViewBag.CurrentPage = page;
             return View(transactions);
