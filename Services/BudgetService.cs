@@ -129,9 +129,11 @@ namespace gestion_budget.Services
             return categories;
         }
 
-        public List<Transaction> ViewTransactionBudget(int parentCategoryId, DateTime startDate, DateTime endDate)
+        public (List<Transaction> Transactions, decimal TotalAmount) ViewTransactionBudget(int parentCategoryId, DateTime startDate, DateTime endDate)
         {
             var transactions = new List<Transaction>();
+            decimal totalAmount = 0;
+
             using (var connection = new SqlConnection(_connectionString))
             {
                 var query = @"
@@ -142,7 +144,8 @@ namespace gestion_budget.Services
                     T.Amount,
                     T.TransactionDate,
                     T.Note,
-                    C.Name AS CategoryName
+                    C.Name AS CategoryName,
+                    SUM(T.Amount) OVER() AS TotalAmount -- Calcul de la somme totale
                 FROM 
                     Transactions T
                 INNER JOIN 
@@ -182,13 +185,17 @@ namespace gestion_budget.Services
                                 }
                             };
 
+                            totalAmount = reader.GetDecimal(reader.GetOrdinal("TotalAmount"));
+
                             transactions.Add(transaction);
                         }
                     }
                 }
             }
-            return transactions;
+
+            return (transactions, totalAmount);
         }
+
 
     }
 }

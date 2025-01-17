@@ -2,10 +2,15 @@
 
 @{
     Layout = "_Layout";
+    var totalAmount = ViewBag.TotalAmount ?? 0;
 }
 
 <div class="container mt-4">
     <h2 class="mb-4">Transactions</h2>
+
+    <div class="mb-3">
+        <h4>Total Montant : @totalAmount.ToString("N0") Ar</h4> <!-- Affichage de la somme totale -->
+    </div>
 
     @if (Model != null && Model.Any())
     {
@@ -32,7 +37,6 @@
                         </tr>
                     }
                 </tbody>
-
             </table>
         </div>
     }

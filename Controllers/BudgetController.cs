@@ -131,13 +131,15 @@ namespace gestion_budget.Controllers
 
             try
             {
-                var transactions = _budgetService.ViewTransactionBudget(CategoryId, dateTimeStart, dateTimeEnd);
+                var (transactions, totalAmount) = _budgetService.ViewTransactionBudget(CategoryId, dateTimeStart, dateTimeEnd);
 
                 if (transactions == null || !transactions.Any())
                 {
+                    ViewBag.TotalAmount = 0;
                     return View("transBudget", new List<Transaction>());
                 }
 
+                ViewBag.TotalAmount = totalAmount;
                 return View("transBudget", transactions);
             }
             catch (Exception ex)
@@ -146,6 +148,7 @@ namespace gestion_budget.Controllers
                 return StatusCode(500, "Une erreur s'est produite.");
             }
         }
+
 
     }
 }
