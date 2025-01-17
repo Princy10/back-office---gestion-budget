@@ -118,35 +118,14 @@
         const [dayStart, monthStart, yearAndTimeStart] = startDate.split('/');
         const [yearStart, timeStart] = yearAndTimeStart.split(' ');
         const dateStart = new Date(`${yearStart}-${monthStart}-${dayStart}T${timeStart}`);
-
-        const timestampStrat = dateStart.getTime();
+        const timestampStart = dateStart.getTime();
 
         const [dayEnd, monthEnd, yearAndTimeEnd] = endDate.split('/');
         const [yearEnd, timeEnd] = yearAndTimeEnd.split(' ');
         const dateEnd = new Date(`${yearEnd}-${monthEnd}-${dayEnd}T${timeEnd}`);
-
         const timestampEnd = dateEnd.getTime();
-        // console.log(timestampStrat,timestampEnd)
-        try {
-            const response = await fetch(`Transaction/TransBudget/${categoryId}/${timestampStrat}/${timestampEnd}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                }
-            });
 
-            if (!response.ok) {
-                const error = await response.json();
-                console.error("Erreur lors de la récupération des données :", error);
-                alert("Une erreur s'est produite. Veuillez réessayer.");
-                return;
-            }
-
-            // window.location.href = `/Budget/Edit/${budgetId}`;
-
-        } catch (err) {
-            console.error("Erreur lors de la requête :", err);
-            alert("Une erreur réseau s'est produite. Veuillez vérifier votre connexion.");
-        }
+        window.location.href = `/Transaction/TransBudget/${categoryId}/${timestampStart}/${timestampEnd}`;
     }
+
 </script>

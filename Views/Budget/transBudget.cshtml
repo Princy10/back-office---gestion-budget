@@ -1,22 +1,46 @@
-﻿
+﻿@model IEnumerable<gestion_budget.Models.Transaction>
 
-<h2>Transactions pour le budget</h2>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Description</th>
-            <th>Montant</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var transaction in Model)
-        {
-            <tr>
-                <td>@transaction.Date.ToString("dd/MM/yyyy")</td>
-                <td>@transaction.Description</td>
-                <td>@transaction.Amount.ToString("C")</td>
-            </tr>
-        }
-    </tbody>
-</table>
+@{
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Transactions</h2>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Utilisateur</th>
+                        <th>Catégorie</th>
+                        <th>Montant</th>
+                        <th>Date de Transaction</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var transaction in Model)
+                    {
+                        <tr>
+                            <td>@transaction.TransactionId</td>
+                            <td>@transaction.UserId</td>
+                            <td>@transaction.CategoryId</td>
+                            <td>@transaction.Amount.ToString("N0") Ar</td>
+                            <td>@transaction.TransactionDate.ToString("dd-MM-yyyy HH:mm")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <p>Aucune transaction trouvée pour la période sélectionnée.</p>
+    }
+
+    <div class="mt-3">
+        <button class="btn btn-secondary" onclick="history.back()">Retour</button>
+    </div>
+</div>

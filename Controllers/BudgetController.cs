@@ -120,7 +120,7 @@ namespace gestion_budget.Controllers
             }
         }
 
-        [HttpGet("Budget/Transaction/TransBudget/{CategoryId}/{StartDate}/{EndDate}")]
+        [HttpGet("Transaction/TransBudget/{CategoryId}/{StartDate}/{EndDate}")]
         public IActionResult ViewTransactionBudget(int CategoryId, long StartDate, long EndDate)
         {
             DateTimeOffset start = DateTimeOffset.FromUnixTimeMilliseconds(StartDate);
@@ -129,29 +129,23 @@ namespace gestion_budget.Controllers
             DateTime dateTimeStart = start.UtcDateTime;
             DateTime dateTimeEnd = end.UtcDateTime;
 
-            DateTime localDateTimeStart = start.LocalDateTime;
-            DateTime localDateTimeEnd = end.LocalDateTime;
-
-            //Console.WriteLine(localDateTimeStart);
-            //Console.WriteLine(localDateTimeEnd);
             try
             {
-                var transaction = _budgetService.ViewTransactionBudget(CategoryId, dateTimeStart, dateTimeEnd);
+                var transactions = _budgetService.ViewTransactionBudget(CategoryId, dateTimeStart, dateTimeEnd);
 
-                if (transaction == null)
+                if (transactions == null || !transactions.Any())
                 {
-                    return NotFound(new { message = "Aucune transaction trouvée pour cette période." });
+                    return View("transBudget", new List<Transaction>());
                 }
 
-                //Console.WriteLine(transaction);
-                return Json(transaction);
+                return View("transBudget", transactions);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-
-                return StatusCode(500, new { message = "Une erreur s'est produite lors de la récupération des transactions du budget." });
+                return StatusCode(500, "Une erreur s'est produite.");
             }
         }
+
     }
 }
