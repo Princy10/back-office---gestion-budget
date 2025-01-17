@@ -27,7 +27,7 @@
                 <span class="text-danger">@percentage.ToString("N0")% (dépassement)</span>
             }
         </h4>
-        <h4>Total Montant des Transactions : @totalAmount.ToString("N0") Ar</h4>
+        <h6>Total Montant des Transactions : @totalAmount.ToString("N0") Ar</h6>
     </div>
 
     @if (Model != null && Model.Any())
@@ -37,7 +37,6 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Utilisateur</th>
                         <th>Catégorie</th>
                         <th>Montant</th>
                         <th>Date de Transaction</th>
@@ -48,7 +47,6 @@
                     {
                         <tr>
                             <td>@transaction.TransactionId</td>
-                            <td>@transaction.UserId</td>
                             <td>@transaction.Category.Name</td>
                             <td>@transaction.Amount.ToString("N0") Ar</td>
                             <td>@transaction.TransactionDate.ToString("dd-MM-yyyy HH:mm")</td>
