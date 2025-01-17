@@ -3,13 +3,31 @@
 @{
     Layout = "_Layout";
     var totalAmount = ViewBag.TotalAmount ?? 0;
+    var budgetAmount = ViewBag.BudgetAmount ?? 0;
+    var percentage = budgetAmount != 0 ? (totalAmount / budgetAmount) * 100 : 0;
 }
 
 <div class="container mt-4">
-    <h2 class="mb-4">Transactions</h2>
+    <h2 class="mb-4">Détails du Budget</h2>
 
     <div class="mb-3">
-        <h4>Total Montant : @totalAmount.ToString("N0") Ar</h4> <!-- Affichage de la somme totale -->
+        <h4>Montant du Budget : @budgetAmount.ToString("N0") Ar</h4>
+        <h4>
+            État du Budget :
+            @if (percentage <= 80)
+            {
+                <span class="text-success">@percentage.ToString("N0")% (sous contrôle)</span>
+            }
+            else if (percentage > 80 && percentage <= 100)
+            {
+                <span class="text-warning">@percentage.ToString("N0")% (proche de la limite)</span>
+            }
+            else
+            {
+                <span class="text-danger">@percentage.ToString("N0")% (dépassement)</span>
+            }
+        </h4>
+        <h4>Total Montant des Transactions : @totalAmount.ToString("N0") Ar</h4>
     </div>
 
     @if (Model != null && Model.Any())

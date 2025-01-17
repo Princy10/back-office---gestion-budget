@@ -120,8 +120,8 @@ namespace gestion_budget.Controllers
             }
         }
 
-        [HttpGet("Transaction/TransBudget/{CategoryId}/{StartDate}/{EndDate}")]
-        public IActionResult ViewTransactionBudget(int CategoryId, long StartDate, long EndDate)
+        [HttpGet("Transaction/TransBudget/{CategoryId}/{StartDate}/{EndDate}/{BudgetAmount}")]
+        public IActionResult ViewTransactionBudget(int CategoryId, long StartDate, long EndDate, decimal BudgetAmount)
         {
             DateTimeOffset start = DateTimeOffset.FromUnixTimeMilliseconds(StartDate);
             DateTimeOffset end = DateTimeOffset.FromUnixTimeMilliseconds(EndDate);
@@ -136,10 +136,12 @@ namespace gestion_budget.Controllers
                 if (transactions == null || !transactions.Any())
                 {
                     ViewBag.TotalAmount = 0;
+                    ViewBag.BudgetAmount = BudgetAmount;
                     return View("transBudget", new List<Transaction>());
                 }
 
                 ViewBag.TotalAmount = totalAmount;
+                ViewBag.BudgetAmount = BudgetAmount;
                 return View("transBudget", transactions);
             }
             catch (Exception ex)
@@ -148,7 +150,6 @@ namespace gestion_budget.Controllers
                 return StatusCode(500, "Une erreur s'est produite.");
             }
         }
-
 
     }
 }

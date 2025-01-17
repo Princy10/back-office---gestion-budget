@@ -45,7 +45,8 @@
                             <button class="btn btn-danger btn-sm" onclick="deleteBudget(@budget.BudgetId)">
                                 Supprimer
                             </button>
-                            <button class="btn btn-info btn-sm" onclick="voirBudget(@budget.Category.CategoryId,'@budget.StartDate','@budget.EndDate')">
+                            <button class="btn btn-info btn-sm"
+                                    onclick="voirBudget(@budget.Category.CategoryId, '@budget.StartDate', '@budget.EndDate', @budget.BudgetAmount)">
                                 Voir
                             </button>
                         </td>
@@ -114,7 +115,7 @@
         }
     }
 
-    async function voirBudget(categoryId, startDate, endDate) {
+    async function voirBudget(categoryId, startDate, endDate, budgetAmount) {
         const [dayStart, monthStart, yearAndTimeStart] = startDate.split('/');
         const [yearStart, timeStart] = yearAndTimeStart.split(' ');
         const dateStart = new Date(`${yearStart}-${monthStart}-${dayStart}T${timeStart}`);
@@ -125,7 +126,7 @@
         const dateEnd = new Date(`${yearEnd}-${monthEnd}-${dayEnd}T${timeEnd}`);
         const timestampEnd = dateEnd.getTime();
 
-        window.location.href = `/Transaction/TransBudget/${categoryId}/${timestampStart}/${timestampEnd}`;
+        window.location.href = `/Transaction/TransBudget/${categoryId}/${timestampStart}/${timestampEnd}/${budgetAmount}`;
     }
 
 </script>
