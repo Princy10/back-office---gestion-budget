@@ -128,5 +128,59 @@ namespace gestion_budget.Services
             }
             return categories;
         }
+
+        public List<Transaction> ViewTransactionBudget(int parentCategoryId, DateTime startDate, DateTime endDate)
+        {
+            var transactions = new List<Transaction>();
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var query = @"
+                SELECT 
+                    T.TransactionId,
+                    T.UserId,
+                    T.CategoryId,
+                    T.Amount,
+                    T.TransactionDate,
+                    T.Note
+                FROM 
+                    Transactions T
+                WHERE 
+                    T.CategoryId IN (
+                        SELECT C.CategoryId
+                        FROM Categories C
+                        WHERE C.ParentCategoryId = @ParentCategoryId
+                    )
+                    AND T.TransactionDate BETWEEN @StartDate AND @EndDate
+                ORDER BY 
+                    T.TransactionDate;";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@ParentCategoryId", parentCategoryId);
+                    command.Parameters.AddWithValue("@StartDate", startDate);
+                    command.Parameters.AddWithValue("@EndDate", endDate);
+
+                    connection.Open();
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var transaction = new Transaction
+                            {
+                                TransactionId = reader.GetInt32(reader.GetOrdinal("TransactionId")),
+                                UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
+                                CategoryId = reader.GetInt32(reader.GetOrdinal("CategoryId")),
+                                Amount = reader.GetDecimal(reader.GetOrdinal("Amount")),
+                                TransactionDate = reader.GetDateTime(reader.GetOrdinal("TransactionDate")),
+                                Note = reader.IsDBNull(reader.GetOrdinal("Note")) ? null : reader.GetString(reader.GetOrdinal("Note"))
+                            };
+
+                            transactions.Add(transaction);
+                        }
+                    }
+                }
+            }
+            return transactions;
+        }
     }
 }

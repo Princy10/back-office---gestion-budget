@@ -21,7 +21,7 @@
             <option value="">Sélectionner un budget</option>
             @foreach (var budget in Model.Budgets)
             {
-                <option value="@budget.BudgetId">@budget.Category.Name (@budget.BudgetAmount.ToString("C"))</option>
+                <option value="@budget.BudgetId">@budget.Category.Name (@budget.BudgetAmount.ToString("N0") Ar)</option>
             }
         </select>
         <span asp-validation-for="Alert.BudgetId" class="text-danger"></span>

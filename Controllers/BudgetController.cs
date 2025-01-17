@@ -3,6 +3,8 @@ using System.Security.Claims;
 using gestion_budget.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Packaging.Signing;
+using System;
 
 namespace gestion_budget.Controllers
 {
@@ -115,6 +117,40 @@ namespace gestion_budget.Controllers
                 Console.WriteLine($"Error: {ex.Message}");
                 ModelState.AddModelError("", "Une erreur s'est produite lors de la suppression du budget.");
                 return RedirectToAction("List");
+            }
+        }
+
+        [HttpGet("Budget/Transaction/TransBudget/{CategoryId}/{StartDate}/{EndDate}")]
+        public IActionResult ViewTransactionBudget(int CategoryId, long StartDate, long EndDate)
+        {
+            DateTimeOffset start = DateTimeOffset.FromUnixTimeMilliseconds(StartDate);
+            DateTimeOffset end = DateTimeOffset.FromUnixTimeMilliseconds(EndDate);
+
+            DateTime dateTimeStart = start.UtcDateTime;
+            DateTime dateTimeEnd = end.UtcDateTime;
+
+            DateTime localDateTimeStart = start.LocalDateTime;
+            DateTime localDateTimeEnd = end.LocalDateTime;
+
+            //Console.WriteLine(localDateTimeStart);
+            //Console.WriteLine(localDateTimeEnd);
+            try
+            {
+                var transaction = _budgetService.ViewTransactionBudget(CategoryId, dateTimeStart, dateTimeEnd);
+
+                if (transaction == null)
+                {
+                    return NotFound(new { message = "Aucune transaction trouvée pour cette période." });
+                }
+
+                //Console.WriteLine(transaction);
+                return Json(transaction);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+
+                return StatusCode(500, new { message = "Une erreur s'est produite lors de la récupération des transactions du budget." });
             }
         }
     }
