@@ -141,9 +141,12 @@ namespace gestion_budget.Services
                     T.CategoryId,
                     T.Amount,
                     T.TransactionDate,
-                    T.Note
+                    T.Note,
+                    C.Name AS CategoryName
                 FROM 
                     Transactions T
+                INNER JOIN 
+                    Categories C ON T.CategoryId = C.CategoryId
                 WHERE 
                     T.CategoryId IN (
                         SELECT C.CategoryId
@@ -172,7 +175,11 @@ namespace gestion_budget.Services
                                 CategoryId = reader.GetInt32(reader.GetOrdinal("CategoryId")),
                                 Amount = reader.GetDecimal(reader.GetOrdinal("Amount")),
                                 TransactionDate = reader.GetDateTime(reader.GetOrdinal("TransactionDate")),
-                                Note = reader.IsDBNull(reader.GetOrdinal("Note")) ? null : reader.GetString(reader.GetOrdinal("Note"))
+                                Note = reader.IsDBNull(reader.GetOrdinal("Note")) ? null : reader.GetString(reader.GetOrdinal("Note")),
+                                Category = new Category
+                                {
+                                    Name = reader.GetString(reader.GetOrdinal("CategoryName"))
+                                }
                             };
 
                             transactions.Add(transaction);
@@ -182,5 +189,6 @@ namespace gestion_budget.Services
             }
             return transactions;
         }
+
     }
 }

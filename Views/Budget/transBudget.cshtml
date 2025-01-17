@@ -26,12 +26,13 @@
                         <tr>
                             <td>@transaction.TransactionId</td>
                             <td>@transaction.UserId</td>
-                            <td>@transaction.CategoryId</td>
+                            <td>@transaction.Category.Name</td>
                             <td>@transaction.Amount.ToString("N0") Ar</td>
                             <td>@transaction.TransactionDate.ToString("dd-MM-yyyy HH:mm")</td>
                         </tr>
                     }
                 </tbody>
+
             </table>
         </div>
     }
