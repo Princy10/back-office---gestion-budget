@@ -65,6 +65,33 @@
 
     }
 </div>
+<div class="container mt-4">
+    <h2 class="mb-4">Uploader un fichier CSV</h2>
+    <form id="csvForm">
+        <div class="mb-3">
+            <label for="csvFile" class="form-label">Fichier CSV :</label>
+            <input type="file" id="csvFile" name="csvFile" accept=".csv" class="form-control" required />
+        </div>
+        <button type="button" id="uploadButton" class="btn btn-success">Charger</button>
+    </form>
+
+    <div id="messageContainer" class="mt-3"></div>
+
+    <div id="dataTableContainer" class="mt-4" style="display:none;">
+        <h4>Données extraites</h4>
+        <table class="table" id="dataTable">
+            <thead>
+                <tr>
+                    <th>Catégorie</th>
+                    <th>Montant</th>
+                    <th>Date</th>
+                    <th>Note</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
 <script>
     document.getElementById('CategoryId').addEventListener('change', function () {
         const categoryId = this.value;
@@ -93,5 +120,53 @@
         } else {
             subCategoryContainer.style.display = 'none';
         }
+    });
+
+    document.getElementById('uploadButton').addEventListener('click', function () {
+        const fileInput = document.getElementById('csvFile');
+        const file = fileInput.files[0];
+
+        if (!file) {
+            document.getElementById('messageContainer').innerHTML =
+                '<div class="alert alert-danger">Veuillez sélectionner un fichier CSV.</div>';
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('csvFile', file);
+
+        fetch('/Transaction/UploadCsv', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                const messageContainer = document.getElementById('messageContainer');
+                const dataTableContainer = document.getElementById('dataTableContainer');
+                const dataTableBody = document.querySelector('#dataTable tbody');
+
+                if (data.success) {
+                    messageContainer.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                    dataTableContainer.style.display = 'block';
+
+                    dataTableBody.innerHTML = '';
+                    data.rows.forEach(row => {
+                        const tr = document.createElement('tr');
+                        row.forEach(cell => {
+                            const td = document.createElement('td');
+                            td.textContent = cell;
+                            tr.appendChild(td);
+                        });
+                        dataTableBody.appendChild(tr);
+                    });
+                } else {
+                    messageContainer.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+                    dataTableContainer.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                document.getElementById('messageContainer').innerHTML =
+                    `<div class="alert alert-danger">Erreur lors de l'envoi du fichier : ${error.message}</div>`;
+            });
     });
 </script>

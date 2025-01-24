@@ -185,6 +185,40 @@ namespace gestion_budget.Controllers
                 return File(fileContents, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
             }
         }
+        [HttpPost]
+        public IActionResult UploadCsv(IFormFile csvFile)
+        {
+            if (csvFile == null || csvFile.Length == 0)
+            {
+                return Json(new { success = false, message = "Veuillez sélectionner un fichier CSV valide." });
+            }
+
+            var uploadedData = new List<string[]>();
+            try
+            {
+                using (var reader = new StreamReader(csvFile.OpenReadStream()))
+                {
+                    var lines = reader.ReadToEnd().Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+                    foreach (var line in lines.Skip(1)) // Ignorer l'en-tête
+                    {
+                        var values = line.Split(',', StringSplitOptions.TrimEntries);
+                        uploadedData.Add(values);
+                    }
+                }
+
+                return Json(new
+                {
+                    success = true,
+                    message = $"{uploadedData.Count} lignes extraites avec succès.",
+                    rows = uploadedData
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Erreur lors de l'extraction : {ex.Message}" });
+            }
+        }
 
     }
 }
