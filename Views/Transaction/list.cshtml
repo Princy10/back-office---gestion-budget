@@ -151,7 +151,7 @@
         }
     }
 
-        function applyFilters() {
+    function applyFilters() {
         const category = document.getElementById('filterCategory').value;
         const type = document.getElementById('filterType').value;
         const startDate = document.getElementById('filterStartDate').value;
@@ -171,21 +171,41 @@
     }
 
     function exportData() {
-        const category = document.getElementById('filterCategory').value;
-        const type = document.getElementById('filterType').value;
-        const startDate = document.getElementById('filterStartDate').value;
-        const endDate = document.getElementById('filterEndDate').value;
-        const minAmount = document.getElementById('filterMinAmount').value;
-        const maxAmount = document.getElementById('filterMaxAmount').value;
+        const urlParams = new URLSearchParams(window.location.search);
+
+        const category = urlParams.get('categoryId') || document.getElementById('filterCategory').value;
+        const type = urlParams.get('isIncome') || document.getElementById('filterType').value;
+        const startDate = urlParams.get('startDate') || document.getElementById('filterStartDate').value;
+        const endDate = urlParams.get('endDate') || document.getElementById('filterEndDate').value;
+        const minAmount = urlParams.get('minAmount') || document.getElementById('filterMinAmount').value;
+        const maxAmount = urlParams.get('maxAmount') || document.getElementById('filterMaxAmount').value;
 
         let url = '/Transaction/Export';
-        if (category) url += `?categoryId=${category}`;
-        if (type) url += `&isIncome=${type === 'true'}`;
-        if (startDate) url += `&startDate=${startDate}`;
-        if (endDate) url += `&endDate=${endDate}`;
-        if (minAmount) url += `&minAmount=${minAmount}`;
-        if (maxAmount) url += `&maxAmount=${maxAmount}`;
+        const queryParams = [];
+
+        if (category) queryParams.push(`categoryId=${category}`);
+        if (type) queryParams.push(`isIncome=${type === 'true'}`);
+        if (startDate) queryParams.push(`startDate=${startDate}`);
+        if (endDate) queryParams.push(`endDate=${endDate}`);
+        if (minAmount) queryParams.push(`minAmount=${minAmount}`);
+        if (maxAmount) queryParams.push(`maxAmount=${maxAmount}`);
+
+        if (queryParams.length > 0) {
+            url += '?' + queryParams.join('&');
+        }
 
         window.location.href = url;
+    }
+
+
+    function resetFilters() {
+        document.getElementById('filterCategory').selectedIndex = 0;
+        document.getElementById('filterType').selectedIndex = 0;
+        document.getElementById('filterStartDate').value = '';
+        document.getElementById('filterEndDate').value = '';
+        document.getElementById('filterMinAmount').value = '';
+        document.getElementById('filterMaxAmount').value = '';
+
+        window.location.href = '/Transaction/List';
     }
 </script>
