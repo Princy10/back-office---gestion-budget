@@ -12,7 +12,7 @@ namespace gestion_budget.Controllers
     public class TransactionController : Controller
     {
         private readonly TransactionService _transactionService;
-        private readonly UserService _userService;
+        private readonly CategoryService _categoryService;
         public TransactionController()
         {
             var connectionString = "Server=DESKTOP-7A266J8;Database=BudgetManagement;Trusted_Connection=True;Encrypt=True;TrustServerCertificate=True";
@@ -221,19 +221,27 @@ namespace gestion_budget.Controllers
         }
 
         [HttpPost]
-        public JsonResult InsertData([FromBody] List<List<string>> data)
+        public JsonResult InsertData([FromBody] DataPayload payload)
         {
-            if (data == null || data.Count == 0)
+            if (payload == null || payload.Data == null || payload.Data.Count == 0)
             {
                 return Json(new { success = false, message = "Aucune donnée à traiter." });
             }
 
-            foreach (var row in data)
+            Console.WriteLine($"UserId reçu : {payload.UserId}");
+
+            foreach (var row in payload.Data)
             {
                 Console.WriteLine("Données reçues : " + string.Join(", ", row));
             }
 
-            return Json(new { success = true, message = "Données reçues et loggées avec succès." });
+            return Json(new { success = true, message = "Insértion avec succès." });
+        }
+
+        public class DataPayload
+        {
+            public string UserId { get; set; }
+            public List<List<string>> Data { get; set; }
         }
     }
 }

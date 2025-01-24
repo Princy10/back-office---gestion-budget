@@ -171,10 +171,11 @@
                     `<div class="alert alert-danger">Erreur lors de l'envoi du fichier : ${error.message}</div>`;
             });
     });
+
+        var UserId = '@UserId';
     document.getElementById('sendDataButton').addEventListener('click', function () {
         const tableRows = document.querySelectorAll('#dataTable tbody tr');
         const data = [];
-
         tableRows.forEach(row => {
             const rowData = [];
             row.querySelectorAll('td').forEach(cell => {
@@ -182,7 +183,6 @@
             });
             data.push(rowData);
         });
-
         if (data.length === 0) {
             document.getElementById('messageContainer').innerHTML =
                 '<div class="alert alert-danger">Aucune donnée à envoyer.</div>';
@@ -194,7 +194,10 @@
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify({
+                UserId: UserId,
+                Data: data
+            })
         })
             .then(response => response.json())
             .then(data => {
