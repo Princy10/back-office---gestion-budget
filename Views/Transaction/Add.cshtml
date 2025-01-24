@@ -90,6 +90,8 @@
             </thead>
             <tbody></tbody>
         </table>
+
+        <button type="button" id="sendDataButton" class="btn btn-primary">Insérer</button>
     </div>
 </div>
 <script>
@@ -167,6 +169,45 @@
             .catch(error => {
                 document.getElementById('messageContainer').innerHTML =
                     `<div class="alert alert-danger">Erreur lors de l'envoi du fichier : ${error.message}</div>`;
+            });
+    });
+    document.getElementById('sendDataButton').addEventListener('click', function () {
+        const tableRows = document.querySelectorAll('#dataTable tbody tr');
+        const data = [];
+
+        tableRows.forEach(row => {
+            const rowData = [];
+            row.querySelectorAll('td').forEach(cell => {
+                rowData.push(cell.textContent);
+            });
+            data.push(rowData);
+        });
+
+        if (data.length === 0) {
+            document.getElementById('messageContainer').innerHTML =
+                '<div class="alert alert-danger">Aucune donnée à envoyer.</div>';
+            return;
+        }
+
+        fetch('/Transaction/InsertData', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.json())
+            .then(data => {
+                const messageContainer = document.getElementById('messageContainer');
+                if (data.success) {
+                    messageContainer.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                } else {
+                    messageContainer.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('messageContainer').innerHTML =
+                    `<div class="alert alert-danger">Erreur lors de l'envoi des données : ${error.message}</div>`;
             });
     });
 </script>
