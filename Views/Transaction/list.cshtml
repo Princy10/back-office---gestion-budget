@@ -1,10 +1,12 @@
 ﻿@model IEnumerable<gestion_budget.Models.Transaction>
 @{
     Layout = "_Layout";
+    int currentPage = ViewBag.CurrentPage;
+    int totalPages = ViewBag.TotalPages;
 }
 <div class="card mb-4">
     <div class="card-header">
-        <h5>Filtres avancés</h5>
+        <h5>Filtres</h5>
     </div>
     <div class="card-body">
         <form id="filterForm" class="row g-3">
@@ -88,13 +90,29 @@
     </tbody>
 </table>
 
-<div class="pagination">
-    @for (int i = 1; i <= ViewBag.TotalPages; i++)
-    {
-        <a class="btn @(i == ViewBag.CurrentPage ? "btn-primary" : "btn-secondary")" href="@Url.Action("List", "Transaction", new { page = i, pageSize = ViewBag.PageSize })">
-            @i
-        </a>
-    }
+<div class="pagination d-flex justify-content-center align-items-center mt-3">
+    <nav aria-label="Transaction navigation">
+        <ul class="pagination">
+            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action("List", "Transaction", new { page = currentPage - 1, pageSize = ViewBag.PageSize })" aria-label="Previous">
+                    <span aria-hidden="true">&laquo; Précédent</span>
+                </a>
+            </li>
+
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <li class="page-item @(i == currentPage ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("List", "Transaction", new { page = i, pageSize = ViewBag.PageSize })">@i</a>
+                </li>
+            }
+
+            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action("List", "Transaction", new { page = currentPage + 1, pageSize = ViewBag.PageSize })" aria-label="Next">
+                    <span aria-hidden="true">Suivant &raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
 </div>
 <br />
 <div class="col-12">
