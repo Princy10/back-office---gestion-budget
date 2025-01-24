@@ -91,7 +91,7 @@ namespace gestion_budget.Controllers
                 return NotFound();
             }
 
-            var categories = _transactionService.GetCategories();
+            var categories = _transactionService.GetSubCat();
             ViewBag.Categories = categories ?? new List<Category>();
             return View(transaction);
         }
