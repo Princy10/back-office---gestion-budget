@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Text;
+using gestion_budget.DAL;
 using gestion_budget.Models;
 using gestion_budget.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -11,12 +12,13 @@ namespace gestion_budget.Controllers
     [Authorize]
     public class TransactionController : Controller
     {
+        private readonly AppDbContext _context;
         private readonly TransactionService _transactionService;
-        private readonly CategoryService _categoryService;
-        public TransactionController()
+        public TransactionController(AppDbContext context)
         {
             var connectionString = "Server=DESKTOP-7A266J8;Database=BudgetManagement;Trusted_Connection=True;Encrypt=True;TrustServerCertificate=True";
             _transactionService = new TransactionService(connectionString);
+            _context = context;
         }
 
         public IActionResult List(int page = 1, int pageSize = 10, int? categoryId = null, bool? isIncome = null, DateTime? startDate = null, DateTime? endDate = null, decimal? minAmount = null, decimal? maxAmount = null)
@@ -228,16 +230,48 @@ namespace gestion_budget.Controllers
                 return Json(new { success = false, message = "Aucune donnée à traiter." });
             }
 
-            Console.WriteLine($"UserId reçu : {payload.UserId}");
-
+            var transactions = new List<Transaction>();
             foreach (var row in payload.Data)
             {
-                Console.WriteLine("Données reçues : " + string.Join(", ", row));
+                var category = _context.Categories
+                    .FirstOrDefault(c => c.Name == row[0].Trim());
+
+                if (category == null)
+                {
+                    Console.WriteLine($"Catégorie non trouvée : {row[0]}");
+                    continue;
+                }
+                Console.WriteLine($"Categorie: {row[0]}, ");
+
+                var transaction = new Transaction
+                {
+                    CategoryId = category.CategoryId,
+                    UserId = int.Parse(payload.UserId),
+                    Amount = decimal.Parse(row[1]),
+                    TransactionDate = DateTime.Parse(row[2]),
+                    Note = row[3]
+                };
+
+                transactions.Add(transaction);
+
+                Console.WriteLine($"UserId: {transaction.UserId}, " +
+                    $"Categorie: {row[0]}, " +
+                    $"CategoryId: {transaction.CategoryId}, " +
+                    $"Montant: {transaction.Amount}, " +
+                    $"Date: {transaction.TransactionDate}");
             }
 
-            return Json(new { success = true, message = "Insértion avec succès." });
-        }
+            foreach (var transaction in transactions)
+            {
+                _transactionService.AddTransaction(transaction);
+            }
 
+            return Json(new
+            {
+                success = true,
+                message = $"{transactions.Count} transactions ajoutées avec succès."
+            });
+        }
         public class DataPayload
         {
             public string UserId { get; set; }

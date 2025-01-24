@@ -91,18 +91,5 @@ namespace gestion_budget.Services
                 .Where(c => c.IsIncome == false)
                 .ToListAsync();
         }
-
-        public int GetCategoryIdByName(string name)
-        {
-            var category = _context.Categories
-                .FirstOrDefault(c => c.Name == name);
-
-            if (category != null)
-            {
-                return category.CategoryId;
-            }
-
-            throw new Exception($"Category with name '{name}' not found.");
-        }
     }
 }
